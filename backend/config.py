@@ -1,0 +1,42 @@
+from pydantic_settings import BaseSettings
+from functools import lru_cache
+
+
+class Settings(BaseSettings):
+    # App
+    app_name: str = "Unified Risk Platform"
+    app_version: str = "1.0.0"
+    debug: bool = False
+
+    # Paths
+    chroma_db_path: str = "./chroma_db"
+    documents_path: str = "./documents"
+    metadata_file: str = "./data/ingested_docs.json"
+
+    # Embedding model
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+    # Chunking
+    chunk_size: int = 512
+    chunk_overlap: int = 64
+    min_chunk_size: int = 50
+
+    # Search
+    hybrid_alpha: float = 0.6  # weight for vector vs BM25
+    default_top_k: int = 5
+
+    # CORS
+    allowed_origins: list[str] = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ]
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()

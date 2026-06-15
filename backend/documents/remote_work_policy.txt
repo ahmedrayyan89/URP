@@ -1,0 +1,133 @@
+ACME CORP — REMOTE WORK POLICY
+Effective Date: April 1, 2024
+Last Reviewed: October 2024
+Document Owner: People Operations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1 — PHILOSOPHY
+
+Acme Corp is a remote-first company. This means remote work is the default, not the exception. Offices exist to enable collaboration, not to enforce attendance. We believe great work happens when people have control over their environment.
+
+This policy defines the expectations that make remote work sustainable at scale: communication norms, security requirements, equipment standards, and the limited circumstances that require in-person presence.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 2 — ELIGIBILITY AND WORK LOCATION
+
+All full-time employees may work remotely. There are three designation types:
+
+Remote (Fully Remote):
+  Primary work location is home or another personal space. No expectation of in-office presence except for designated All-Hands weeks (twice per year).
+
+Hybrid:
+  Split between home and a regional office. Schedule agreed upon with manager. Typical arrangement: 2–3 days/week in office.
+
+Office-Based:
+  Role requires regular in-office presence. Customer-facing, lab, or hardware roles may fall here. Defined in offer letter.
+
+Work Location Change Requests:
+  You must notify People Ops 60 days before permanently relocating to a new city or state. Compensation may be adjusted based on the labor market of the new location. International relocations require advance approval from Legal and Finance.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 3 — CORE HOURS AND AVAILABILITY
+
+Acme Corp does not require rigid 9-to-5 schedules. However, to enable real-time collaboration across teams, all employees must be available and responsive during Core Hours:
+
+Core Hours: 10:00 AM – 3:00 PM in your team's primary time zone.
+
+"Available" means:
+  — Slack status is active (not away or DND)
+  — Responding to messages within 30 minutes
+  — Joining scheduled meetings on time
+
+Outside core hours, async communication is standard. A same-day response is expected for non-urgent messages sent outside core hours.
+
+Flexible Arrangements:
+  Employees with caregiving responsibilities, health conditions, or time zone differences may request a modified core hours arrangement. Submit a request to your manager and People Ops. Approval is based on role and team requirements.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 4 — EQUIPMENT AND HOME OFFICE
+
+Acme Corp provides:
+  — MacBook Pro (M-series) or equivalent Windows laptop, your choice
+  — External display (up to $600 reimbursement, receipts required)
+  — Keyboard, mouse, headset (up to $200 total)
+  — $500 home office setup stipend (one-time, new hires)
+
+Employee Responsibilities:
+  — Keep equipment physically secure (locked when unattended, not left in vehicles overnight)
+  — Report lost or stolen equipment to IT Security within 2 hours
+  — Install OS and security updates within 72 hours of release
+  — Do not allow household members to use company equipment for personal use
+
+Equipment remains Acme Corp property. Upon termination, all equipment must be returned within 14 days. Failure to return equipment results in deduction from final paycheck.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 5 — SECURITY REQUIREMENTS
+
+Remote employees are the perimeter. Security requirements are non-negotiable.
+
+Required at All Times:
+  — Use of company-issued VPN (Tailscale) when accessing internal systems
+  — Full-disk encryption enabled (FileVault on Mac, BitLocker on Windows)
+  — Screen lock activates after 5 minutes of inactivity
+  — Multi-factor authentication (MFA) on all company accounts
+  — Password manager usage (1Password is company-provided)
+
+Prohibited:
+  — Conducting work on public WiFi without the VPN active
+  — Storing company data on personal Dropbox, Google Drive, or similar
+  — Disabling security tools (MDM agent, endpoint protection)
+  — Sharing VPN credentials or account access
+
+Working from Public Spaces:
+  Coffee shops, airports, and co-working spaces are permitted with VPN active. Use a privacy screen protector in crowded spaces when working with sensitive data.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 6 — COMMUNICATION STANDARDS
+
+Async-First:
+  Default to written communication. Not every question requires a meeting. Document decisions in Notion. Record important meetings and post transcripts in the relevant Slack channel.
+
+Slack Norms:
+  — Use threads to keep channels readable
+  — Mark yourself away when you step out for more than 30 minutes
+  — Use status emoji to communicate context (🎧 = focusing, 🏥 = sick, ✈️ = travel)
+  — Avoid @channel or @here except for genuine urgency (production incidents, safety issues)
+
+Meeting Norms:
+  — Video on is default for team meetings, optional for large all-hands
+  — Start and end on time; the organizer is responsible for this
+  — All meetings must have an agenda posted in the invite 24 hours in advance
+  — A meeting with no agenda can be declined without explanation
+
+Documentation Norms:
+  — Decisions made in meetings must be written up in Notion within 24 hours
+  — "If it's not written, it didn't happen" is our operating principle
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 7 — IN-PERSON REQUIREMENTS
+
+Fully remote employees are expected to attend in person:
+
+Company All-Hands: Twice per year (spring and fall). Acme covers travel, hotel, and a $75/day meal per diem. Dates announced 90 days in advance.
+
+Onboarding Week: All new hires attend their first week in person at the nearest regional office. Travel covered by Acme.
+
+Team Offsites: Individual teams may organize quarterly offsites. Participation is expected but can be waived with manager approval for documented hardship. Budget is $500/person/quarter, pre-approved by Finance.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 8 — POLICY VIOLATIONS
+
+Violations of this remote work policy (e.g., working on public WiFi without VPN, failing to secure equipment, consistent unavailability during core hours) are subject to the same disciplinary process as any other policy violation.
+
+Repeat violations may result in reclassification to an office-based arrangement, up to and including termination.
+
+For questions, contact people-ops@acmecorp.com.

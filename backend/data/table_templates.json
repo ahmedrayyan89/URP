@@ -1,0 +1,69 @@
+[
+  {
+    "id": "pto_rates",
+    "name": "PTO Accrual Rates",
+    "description": "Paid time off accrual by tenure band.",
+    "columns": [
+      { "key": "tenure_band", "label": "Tenure Band" },
+      { "key": "days_per_year", "label": "Days / Year" },
+      { "key": "hours_per_pay_period", "label": "Hours / Pay Period" },
+      { "key": "notes", "label": "Notes" }
+    ]
+  },
+  {
+    "id": "benefits_lookup",
+    "name": "Benefits Lookup",
+    "description": "Benefit name, value, and eligibility rules.",
+    "columns": [
+      { "key": "benefit", "label": "Benefit" },
+      { "key": "value", "label": "Value" },
+      { "key": "eligibility", "label": "Eligibility" },
+      { "key": "notes", "label": "Notes" }
+    ]
+  },
+  {
+    "id": "remote_work_rules",
+    "name": "Remote Work Rules",
+    "description": "Work designation types and expectations.",
+    "columns": [
+      { "key": "designation", "label": "Designation" },
+      { "key": "in_office_expectation", "label": "In-Office Expectation" },
+      { "key": "typical_use", "label": "Typical Use" }
+    ]
+  },
+  {
+    "id": "vendor_register",
+    "name": "Vendor Register",
+    "description": "Third-party vendors with risk scores and audit dates.",
+    "columns": [
+      { "key": "vendor_name", "label": "Vendor Name" },
+      { "key": "risk_score", "label": "Risk Score" },
+      { "key": "last_audit", "label": "Last Audit" },
+      { "key": "status", "label": "Status" },
+      { "key": "owner", "label": "Owner" }
+    ]
+  },
+  {
+    "id": "risk_register",
+    "name": "Risk Register",
+    "description": "Identified risks with severity and ownership.",
+    "columns": [
+      { "key": "risk_id", "label": "Risk ID" },
+      { "key": "category", "label": "Category" },
+      { "key": "severity", "label": "Severity" },
+      { "key": "likelihood", "label": "Likelihood" },
+      { "key": "owner", "label": "Owner" },
+      { "key": "status", "label": "Status" }
+    ]
+  },
+  {
+    "id": "custom",
+    "name": "Custom Table",
+    "description": "Generic three-column table for any lookup data.",
+    "columns": [
+      { "key": "item", "label": "Item" },
+      { "key": "value", "label": "Value" },
+      { "key": "notes", "label": "Notes" }
+    ]
+  }
+]

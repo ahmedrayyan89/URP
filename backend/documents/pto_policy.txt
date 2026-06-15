@@ -1,0 +1,114 @@
+ACME CORP — PAID TIME OFF POLICY
+Effective Date: January 1, 2024
+Last Reviewed: October 2024
+Document Owner: People Operations
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1 — POLICY OVERVIEW
+
+Acme Corp believes that rest and recovery are not perks — they are prerequisites for doing great work. This policy outlines how Paid Time Off (PTO) accrues, how it may be used, and what happens to unused balances.
+
+This policy applies to all full-time employees in their regular standing. Part-time employees accrue PTO on a pro-rated basis relative to their contracted hours. Contractors and consultants are not eligible for PTO under this policy.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 2 — ACCRUAL RATES
+
+PTO accrues on a bi-weekly basis starting from the employee's first day of employment.
+
+Years 0–1 (New Employee):
+  15 days per year (5.77 hours per pay period)
+
+Years 2–4 (Mid-Tenure):
+  20 days per year (7.69 hours per pay period)
+
+Years 5+ (Senior Tenure):
+  25 days per year (9.62 hours per pay period)
+
+Directors and above are granted 25 days from their start date, regardless of tenure.
+
+PTO accrual is paused during unpaid leaves of absence. Accrual resumes on the first full pay period after return.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 3 — MAXIMUM BALANCE / ROLLOVER CAP
+
+To encourage employees to actually use their PTO, Acme Corp enforces a rollover cap.
+
+Maximum Balance at Any Time: 1.5x your annual accrual rate.
+  — New employees: 22.5 days
+  — Mid-tenure: 30 days
+  — Senior: 37.5 days
+
+When you hit the cap, accrual stops until you draw down your balance below the cap. There is no payment for capped PTO that was never accrued.
+
+At year-end (December 31), unused PTO above 5 days is forfeited. The 5-day carryover is automatic and does not require manager approval.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 4 — REQUESTING TIME OFF
+
+All PTO requests must be submitted through the HR portal (hr.acmecorp.internal).
+
+Notice Requirements:
+  — 1–2 days off: 5 business days advance notice preferred
+  — 3–5 days off: 2 weeks advance notice required
+  — 6+ days off: 4 weeks advance notice required
+  — Emergency PTO: notify your manager as soon as possible, same-day notice is acceptable for genuine emergencies
+
+Approval:
+  Your direct manager approves PTO requests. If your manager is unavailable, their manager or the People Ops team can approve.
+
+  PTO requests may be denied if:
+    (a) The team cannot maintain minimum coverage
+    (b) The request falls on a critical release or project deadline
+    (c) The employee has a negative PTO balance
+
+Denial should be accompanied by a written explanation and a suggested alternative window.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 5 — HOLIDAYS
+
+Acme Corp observes 11 federal holidays per year. These are separate from PTO and do not affect your PTO balance.
+
+Federal Holidays (observed):
+  New Year's Day, Martin Luther King Jr. Day, Presidents' Day, Memorial Day, Juneteenth, Independence Day, Labor Day, Columbus Day, Veterans Day, Thanksgiving Day, Christmas Day.
+
+Floating Holiday:
+  Each employee receives 1 floating holiday per calendar year to use at their discretion (religious observance, cultural celebration, birthday, etc.). Floating holidays do not roll over.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 6 — PTO AND TERMINATION
+
+Voluntary Resignation:
+  Acme Corp does not pay out accrued, unused PTO upon voluntary resignation except in states where this is legally required (currently: California, Colorado, Illinois, Massachusetts, Montana, Nebraska, North Dakota).
+
+Layoff / Involuntary Termination:
+  In all states: accrued unused PTO will be paid out in the final paycheck at the employee's regular hourly rate.
+
+  Calculation: PTO Balance ÷ 2080 hours × Annual Salary = Payout Amount
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 7 — SICK LEAVE
+
+Sick leave is tracked separately from PTO. Employees receive 7 sick days per year. Sick days do not accrue — they reset on January 1. Unused sick days are not paid out.
+
+Sick leave may be used for:
+  — Personal illness or injury
+  — Medical appointments (self or immediate family)
+  — Mental health days
+  — Caring for an ill immediate family member
+
+Extended illness beyond 7 days triggers the Short-Term Disability (STD) process. Contact People Ops after day 7.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 8 — POLICY VIOLATIONS
+
+Abuse of PTO (e.g., claiming sick leave when not ill, failing to provide advance notice without cause, pattern of unplanned absences) may result in disciplinary action up to and including termination.
+
+For questions, contact people-ops@acmecorp.com.

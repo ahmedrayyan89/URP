@@ -1,0 +1,421 @@
+[
+  {
+    "id": "pto_accrual_rates",
+    "name": "PTO Accrual Rates",
+    "description": "Paid time off accrual by tenure band for full-time employees.",
+    "source_doc": "pto_policy.txt",
+    "source": "system",
+    "columns": [
+      {
+        "key": "tenure_band",
+        "label": "Tenure Band"
+      },
+      {
+        "key": "days_per_year",
+        "label": "Days / Year"
+      },
+      {
+        "key": "hours_per_pay_period",
+        "label": "Hours / Pay Period"
+      },
+      {
+        "key": "notes",
+        "label": "Notes"
+      }
+    ],
+    "rows": [
+      {
+        "tenure_band": "Years 0–1",
+        "days_per_year": "15",
+        "hours_per_pay_period": "5.77",
+        "notes": "New employee"
+      },
+      {
+        "tenure_band": "Years 2–4",
+        "days_per_year": "20",
+        "hours_per_pay_period": "7.69",
+        "notes": "Mid-tenure"
+      },
+      {
+        "tenure_band": "Years 5+",
+        "days_per_year": "25",
+        "hours_per_pay_period": "9.62",
+        "notes": "Senior tenure"
+      },
+      {
+        "tenure_band": "Directors+",
+        "days_per_year": "25",
+        "hours_per_pay_period": "9.62",
+        "notes": "From start date, regardless of tenure"
+      }
+    ]
+  },
+  {
+    "id": "health_insurance_plans",
+    "name": "Health Insurance Plans",
+    "description": "Medical plan options, premiums, deductibles, and out-of-pocket maximums.",
+    "source_doc": "benefits_guide.txt",
+    "columns": [
+      {
+        "key": "plan",
+        "label": "Plan"
+      },
+      {
+        "key": "employee_premium",
+        "label": "Employee Premium"
+      },
+      {
+        "key": "family_premium",
+        "label": "Family Premium"
+      },
+      {
+        "key": "deductible",
+        "label": "Deductible (Ind / Fam)"
+      },
+      {
+        "key": "oop_max",
+        "label": "Out-of-Pocket Max"
+      },
+      {
+        "key": "notes",
+        "label": "Notes"
+      }
+    ],
+    "rows": [
+      {
+        "plan": "Plan A (HDHP + HSA)",
+        "employee_premium": "$0/mo",
+        "family_premium": "$180/mo",
+        "deductible": "$1,500 / $3,000",
+        "oop_max": "$4,000 / $8,000",
+        "notes": "HSA contribution from Acme: $750 individual, $1,500 family per year"
+      },
+      {
+        "plan": "Plan B (PPO)",
+        "employee_premium": "$60/mo",
+        "family_premium": "$310/mo",
+        "deductible": "$500 / $1,000",
+        "oop_max": "$3,000 / $6,000",
+        "notes": "$20 PCP copay / $40 specialist copay"
+      },
+      {
+        "plan": "Plan C (HMO)",
+        "employee_premium": "$30/mo",
+        "family_premium": "$220/mo",
+        "deductible": "—",
+        "oop_max": "—",
+        "notes": "California employees only; referrals required; no in-network deductible"
+      }
+    ],
+    "source": "system"
+  },
+  {
+    "id": "retirement_financial_benefits",
+    "name": "401(k) and Financial Benefits",
+    "description": "Retirement plan match, eligibility, and provider details.",
+    "source_doc": "benefits_guide.txt",
+    "columns": [
+      {
+        "key": "benefit",
+        "label": "Benefit"
+      },
+      {
+        "key": "value",
+        "label": "Value"
+      },
+      {
+        "key": "eligibility",
+        "label": "Eligibility"
+      },
+      {
+        "key": "notes",
+        "label": "Notes"
+      }
+    ],
+    "rows": [
+      {
+        "benefit": "Employer match",
+        "value": "100% up to 4% of base salary",
+        "eligibility": "After 90 days",
+        "notes": "Vests immediately — no vesting cliff"
+      },
+      {
+        "benefit": "Provider",
+        "value": "Fidelity Investments",
+        "eligibility": "—",
+        "notes": "hr.acmecorp.internal/401k"
+      },
+      {
+        "benefit": "Roth 401(k) option",
+        "value": "Yes",
+        "eligibility": "—",
+        "notes": "Employer match always deposited as traditional (pre-tax)"
+      }
+    ],
+    "source": "system"
+  },
+  {
+    "id": "remote_work_designations",
+    "name": "Remote Work Designations",
+    "description": "Work location types and in-office expectations for full-time employees.",
+    "source_doc": "remote_work_policy.txt",
+    "columns": [
+      {
+        "key": "designation",
+        "label": "Designation"
+      },
+      {
+        "key": "in_office_expectation",
+        "label": "In-Office Expectation"
+      },
+      {
+        "key": "typical_use",
+        "label": "Typical Use"
+      }
+    ],
+    "rows": [
+      {
+        "designation": "Remote (Fully Remote)",
+        "in_office_expectation": "None (except 2×/year All-Hands weeks)",
+        "typical_use": "Default for full-time employees"
+      },
+      {
+        "designation": "Hybrid",
+        "in_office_expectation": "2–3 days/week in regional office",
+        "typical_use": "Schedule agreed upon with manager"
+      },
+      {
+        "designation": "Office-Based",
+        "in_office_expectation": "Regular in-office presence",
+        "typical_use": "Defined in offer letter; customer-facing, lab, or hardware roles"
+      }
+    ],
+    "source": "system"
+  },
+  {
+    "id": "core_hours_equipment",
+    "name": "Core Hours and Equipment",
+    "description": "Availability requirements and home office equipment provided by Acme Corp.",
+    "source_doc": "remote_work_policy.txt",
+    "columns": [
+      {
+        "key": "item",
+        "label": "Item"
+      },
+      {
+        "key": "rule",
+        "label": "Rule"
+      }
+    ],
+    "rows": [
+      {
+        "item": "Core hours",
+        "rule": "10:00 AM – 3:00 PM in your team's primary time zone"
+      },
+      {
+        "item": "Response SLA",
+        "rule": "Respond to messages within 30 minutes during core hours"
+      },
+      {
+        "item": "Laptop",
+        "rule": "MacBook Pro (M-series) or equivalent Windows laptop, employee's choice"
+      },
+      {
+        "item": "Display reimbursement",
+        "rule": "Up to $600 for external display (receipts required)"
+      },
+      {
+        "item": "Peripherals",
+        "rule": "Keyboard, mouse, headset — up to $200 total"
+      },
+      {
+        "item": "Home office stipend",
+        "rule": "$500 one-time setup stipend for new hires"
+      }
+    ],
+    "source": "system"
+  },
+  {
+    "id": "sdsd",
+    "name": "sdsd",
+    "description": "fdf",
+    "source_doc": "csv_import",
+    "source": "user",
+    "columns": [
+      {
+        "key": "empno",
+        "label": "EMPNO"
+      },
+      {
+        "key": "ename",
+        "label": "ENAME"
+      },
+      {
+        "key": "job",
+        "label": "JOB"
+      },
+      {
+        "key": "mgr",
+        "label": "MGR"
+      },
+      {
+        "key": "hiredate",
+        "label": "HIREDATE"
+      },
+      {
+        "key": "sal",
+        "label": "SAL"
+      },
+      {
+        "key": "comm",
+        "label": "COMM"
+      },
+      {
+        "key": "deptno",
+        "label": "DEPTNO"
+      }
+    ],
+    "rows": [
+      {
+        "empno": "7369",
+        "ename": "SMITH",
+        "job": "CLERK",
+        "mgr": "7902",
+        "hiredate": "1980-12-17",
+        "sal": "800.0",
+        "comm": "0.0",
+        "deptno": "20"
+      },
+      {
+        "empno": "7499",
+        "ename": "ALLEN",
+        "job": "SALESMAN",
+        "mgr": "7698",
+        "hiredate": "1981-02-20",
+        "sal": "1600.0",
+        "comm": "300.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7521",
+        "ename": "WARD",
+        "job": "SALESMAN",
+        "mgr": "7698",
+        "hiredate": "1981-02-22",
+        "sal": "1250.0",
+        "comm": "500.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7566",
+        "ename": "JONES",
+        "job": "MANAGER",
+        "mgr": "7839",
+        "hiredate": "1981-04-02",
+        "sal": "2975.0",
+        "comm": "0.0",
+        "deptno": "20"
+      },
+      {
+        "empno": "7654",
+        "ename": "MARTIN",
+        "job": "SALESMAN",
+        "mgr": "7698",
+        "hiredate": "1981-09-28",
+        "sal": "1250.0",
+        "comm": "1400.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7698",
+        "ename": "BLAKE",
+        "job": "MANAGER",
+        "mgr": "7839",
+        "hiredate": "1981-05-01",
+        "sal": "2850.0",
+        "comm": "0.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7782",
+        "ename": "CLARK",
+        "job": "MANAGER",
+        "mgr": "7839",
+        "hiredate": "1981-06-09",
+        "sal": "2450.0",
+        "comm": "0.0",
+        "deptno": "10"
+      },
+      {
+        "empno": "7788",
+        "ename": "SCOTT",
+        "job": "ANALYST",
+        "mgr": "7566",
+        "hiredate": "1987-07-13",
+        "sal": "3000.0",
+        "comm": "0.0",
+        "deptno": "20"
+      },
+      {
+        "empno": "7839",
+        "ename": "KING",
+        "job": "PRESIDENT",
+        "mgr": "0",
+        "hiredate": "1981-11-17",
+        "sal": "5000.0",
+        "comm": "0.0",
+        "deptno": "10"
+      },
+      {
+        "empno": "7844",
+        "ename": "TURNER",
+        "job": "SALESMAN",
+        "mgr": "7698",
+        "hiredate": "1981-09-08",
+        "sal": "1500.0",
+        "comm": "0.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7876",
+        "ename": "ADAMS",
+        "job": "CLERK",
+        "mgr": "7788",
+        "hiredate": "1987-07-13",
+        "sal": "1100.0",
+        "comm": "0.0",
+        "deptno": "20"
+      },
+      {
+        "empno": "7900",
+        "ename": "JAMES",
+        "job": "CLERK",
+        "mgr": "7698",
+        "hiredate": "1981-12-03",
+        "sal": "950.0",
+        "comm": "0.0",
+        "deptno": "30"
+      },
+      {
+        "empno": "7902",
+        "ename": "FORD",
+        "job": "ANALYST",
+        "mgr": "7566",
+        "hiredate": "1981-12-03",
+        "sal": "3000.0",
+        "comm": "0.0",
+        "deptno": "20"
+      },
+      {
+        "empno": "7934",
+        "ename": "MILLER",
+        "job": "CLERK",
+        "mgr": "7782",
+        "hiredate": "1982-01-23",
+        "sal": "1300.0",
+        "comm": "0.0",
+        "deptno": "10"
+      }
+    ]
+  }
+]

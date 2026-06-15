@@ -1,0 +1,112 @@
+ACME CORP — CODE OF CONDUCT
+Effective Date: March 1, 2023
+Last Reviewed: September 2024
+Document Owner: Legal & Compliance
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1 — PURPOSE
+
+This Code of Conduct establishes the behavioral standards that govern how we treat each other, our customers, our partners, and our competitors. It is not an exhaustive list of rules. It is a statement of values from which rules are derived.
+
+When in doubt, ask: would I be comfortable if my manager, a colleague, or a journalist could see exactly what I'm doing and why? If not, don't do it.
+
+This Code applies to all Acme Corp employees, contractors, interns, board members, and any third parties acting on Acme Corp's behalf.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 2 — RESPECT IN THE WORKPLACE
+
+We are committed to a workplace free from harassment, discrimination, and retaliation.
+
+Prohibited Conduct includes but is not limited to:
+  — Discrimination based on race, color, religion, sex, sexual orientation, gender identity or expression, national origin, age, disability, genetic information, marital status, veteran status, or any other protected class
+  — Sexual harassment: unwanted advances, requests for sexual favors, or verbal/physical conduct of a sexual nature that creates a hostile work environment
+  — Bullying: repeated behavior intended to intimidate, demean, or exclude a colleague
+  — Retaliation against anyone who reports a concern in good faith
+
+What to Do If You Experience or Witness a Violation:
+  1. You can report directly to your manager (if they are not the subject)
+  2. Report to People Operations at people-ops@acmecorp.com
+  3. Use the anonymous ethics hotline at ethics.acmecorp.com
+  4. Contact Legal & Compliance at compliance@acmecorp.com
+
+All reports are investigated promptly and confidentially. Retaliation for good-faith reporting is itself a terminable offense.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 3 — CONFLICTS OF INTEREST
+
+A conflict of interest exists when your personal interests could interfere — or appear to interfere — with your ability to act in Acme Corp's best interest.
+
+You must disclose a potential conflict if you:
+  — Have a financial interest in a vendor, customer, or competitor (more than $10,000 or 1% ownership)
+  — Have a family member or close personal relationship with someone you supervise, hire, or make purchasing decisions about
+  — Serve on the board of a company that does business with Acme Corp
+  — Are considering or pursuing outside employment in a competing business
+
+Disclosure Process:
+  Submit a Conflict of Interest Disclosure form to compliance@acmecorp.com. Legal will review and advise on recusal or other remedies. Undisclosed conflicts of interest are grounds for immediate termination.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 4 — CONFIDENTIALITY AND INFORMATION SECURITY
+
+During and after your employment, you are obligated to protect Acme Corp's confidential information.
+
+Confidential Information includes:
+  — Source code and product roadmaps
+  — Customer data, contracts, and pricing
+  — Financial results that are not publicly disclosed
+  — Personnel records and compensation data
+  — Business strategies and M&A activity
+
+What you must not do:
+  — Share confidential information with unauthorized parties inside or outside the company
+  — Access confidential information you don't have a business need to access
+  — Store confidential information on personal devices or unauthorized cloud services
+  — Use confidential information for personal financial gain (insider trading)
+
+After employment ends, confidentiality obligations continue indefinitely for trade secrets and for 2 years for other confidential information, as defined in your employment agreement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 5 — FAIR DEALING AND ANTI-CORRUPTION
+
+Acme Corp competes on merit. We do not engage in bribery, kickbacks, or corrupt practices, regardless of local custom or perceived competitive pressure.
+
+Gifts and Entertainment:
+  — You may accept gifts of nominal value (under $50) from vendors or customers
+  — Anything over $50 must be disclosed to your manager and Compliance
+  — You may not accept cash, gift cards, or equivalent in any amount
+  — Offering gifts to government officials requires pre-approval from Legal, regardless of amount
+
+Accurate Record-Keeping:
+  All financial records, expense reports, and business records must be accurate and complete. Falsifying records — even minor expense reports — is grounds for immediate termination and may result in criminal liability.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 6 — SOCIAL MEDIA AND EXTERNAL COMMUNICATIONS
+
+You are personally responsible for what you post publicly. Do not:
+  — Share confidential Acme Corp information on social media
+  — Make disparaging public statements about colleagues, customers, or competitors that could harm Acme Corp's reputation
+  — Imply you are speaking on behalf of Acme Corp unless explicitly authorized to do so
+
+You may speak positively about your work and are encouraged to share publicly available content. When in doubt, check with Marketing & Communications.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 7 — REPORTING AND NON-RETALIATION
+
+If you become aware of a violation of this Code or any law or regulation, you have an obligation to report it.
+
+How to report:
+  — Manager or skip-level manager
+  — People Operations: people-ops@acmecorp.com
+  — Compliance: compliance@acmecorp.com
+  — Anonymous Hotline: ethics.acmecorp.com (available 24/7)
+
+Acme Corp prohibits retaliation against any employee who reports a concern in good faith. If you experience retaliation, report it immediately via the same channels.
+
+Deliberately false reports made in bad faith are themselves a violation of this Code.

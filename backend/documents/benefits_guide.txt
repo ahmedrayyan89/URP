@@ -1,0 +1,137 @@
+ACME CORP — EMPLOYEE BENEFITS GUIDE
+Plan Year: January 1 – December 31, 2024
+Document Owner: Total Rewards, People Operations
+Questions: benefits@acmecorp.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1 — BENEFITS OVERVIEW
+
+Acme Corp's benefits program is designed to support your health, financial security, and long-term wellbeing. Benefits eligibility begins on your first day for most programs. Some programs (401k match, equity) begin after 90 days.
+
+This document summarizes benefits. Full plan documents are available on the HR portal. In case of conflict, the official plan documents govern.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 2 — HEALTH INSURANCE
+
+Acme Corp offers three medical plan options through BlueCross BlueShield:
+
+Plan A — High-Deductible Health Plan (HDHP) + HSA:
+  Employee Premium: $0/month (fully covered by Acme)
+  Family Premium: $180/month
+  Deductible: $1,500 individual / $3,000 family
+  Out-of-Pocket Max: $4,000 individual / $8,000 family
+  HSA Contribution from Acme: $750/individual, $1,500/family per year
+
+Plan B — Preferred Provider Organization (PPO):
+  Employee Premium: $60/month
+  Family Premium: $310/month
+  Deductible: $500 individual / $1,000 family
+  Copay: $20 primary care / $40 specialist
+  Out-of-Pocket Max: $3,000 individual / $6,000 family
+
+Plan C — HMO (California employees only):
+  Employee Premium: $30/month
+  Family Premium: $220/month
+  Requires primary care physician referrals
+  No deductible for in-network care
+  Copay: $15 all visits
+
+Dental Insurance:
+  Acme covers 100% of employee dental premiums. Orthodontia is covered at 50% with a $2,000 lifetime maximum.
+
+Vision Insurance:
+  Acme covers 100% of employee vision premiums. $200 frame allowance per year.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 3 — RETIREMENT SAVINGS
+
+401(k) Plan:
+  Acme Corp matches 100% of your contributions up to 4% of your base salary. The match vests immediately — there is no vesting cliff.
+
+  Example: If you earn $100,000 and contribute 4% ($4,000/year), Acme matches $4,000/year. That's $8,000 total going to your retirement annually.
+
+  Eligibility: 90 days of employment
+  Contribution Limit (2024): $23,000 (employee); $69,000 including employer contributions
+  Catch-Up Contribution (age 50+): additional $7,500/year
+  Provider: Fidelity Investments (hr.acmecorp.internal/401k)
+
+Roth 401(k) Option:
+  Available alongside or instead of traditional 401(k). The employer match is always deposited as traditional (pre-tax).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 4 — EQUITY COMPENSATION
+
+All full-time employees receive Restricted Stock Units (RSUs).
+
+Vesting Schedule:
+  Standard 4-year vesting with a 1-year cliff.
+  — After year 1: 25% of grant vests
+  — Years 2–4: remaining 75% vests quarterly (6.25%/quarter)
+
+Grants are made at offer and at annual performance review. The size of your initial grant is specified in your offer letter.
+
+Double-Trigger Acceleration:
+  In the event of an acquisition: if you are terminated or your role materially changes within 12 months, unvested RSUs accelerate 100%.
+
+Tax Note: RSU vesting is a taxable event. Acme Corp withholds shares to cover federal/state withholding at the supplemental rate. Consult a tax advisor for your specific situation.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 5 — FAMILY AND PARENTAL LEAVE
+
+Parental Leave:
+  Primary caregiver (birth, adoption, or foster): 16 weeks fully paid
+  Secondary caregiver: 6 weeks fully paid
+
+  Leave can be taken in one continuous block or split into two blocks within 12 months of the qualifying event. Notify People Ops at least 30 days before expected leave start date when possible.
+
+Family Medical Leave Act (FMLA):
+  Acme Corp complies with all FMLA requirements. Eligible employees may take up to 12 weeks of job-protected unpaid leave per year for qualifying family or medical reasons. Acme's paid parental leave runs concurrent with FMLA.
+
+Bereavement Leave:
+  Immediate family (spouse, child, parent, sibling): 5 paid days
+  Extended family (grandparent, in-law, aunt/uncle): 3 paid days
+  Additional unpaid leave may be arranged with manager approval.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 6 — ADDITIONAL BENEFITS
+
+Learning and Development:
+  $2,000 per employee per year for professional development (courses, certifications, conferences, books). Requires manager approval. Submit receipts via Expensify tagged "L&D."
+
+Home Office Stipend:
+  $500 one-time setup allowance for new hires.
+  $50/month recurring for internet, equipment, or supplies.
+
+Wellness Benefit:
+  $100/month reimbursable for gym membership, fitness classes, meditation apps (Headspace, Calm), or other wellness-related expenses. No receipts under $10 required.
+
+Employee Assistance Program (EAP):
+  Free, confidential counseling (up to 8 sessions/year), legal consultations, financial planning sessions, and crisis support. Available 24/7 at 1-800-555-EAP1.
+
+Commuter Benefits:
+  Pre-tax commuter accounts for transit and parking up to IRS limits ($315/month transit, $315/month parking for 2024).
+
+Life Insurance:
+  2x base salary in term life insurance, fully covered by Acme. Additional voluntary life insurance available at group rates.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 7 — OPEN ENROLLMENT
+
+Open enrollment runs annually in November for coverage effective January 1.
+
+During open enrollment you may:
+  — Switch between medical plans
+  — Add or remove dependents
+  — Enroll in FSA/HSA
+  — Adjust 401(k) contributions
+
+Outside of open enrollment, changes are only allowed following a Qualifying Life Event (marriage, divorce, birth, adoption, loss of other coverage). You have 30 days from the event to make changes.
+
+Contact benefits@acmecorp.com with questions.

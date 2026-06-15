@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+.venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Backend runtime / generated
+backend/chroma_db/
+backend/data/ingested_docs.json
+backend/ingested_docs.json
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Cursor (local workspace state)
+.cursor/
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
