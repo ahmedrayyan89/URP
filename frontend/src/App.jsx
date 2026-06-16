@@ -1,75 +1,127 @@
-import { useState, useEffect } from "react";
-import Topbar from "./components/layout/Topbar";
-import KnowledgeBase from "./components/knowledge/KnowledgeBase";
-import SearchPanel from "./components/retrieval/SearchPanel";
-import { IconSearch, IconDatabase } from "./components/layout/Icons";
-import { api } from "./lib/api";
+import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ProjectShell from "./layouts/ProjectShell";
+import LoginPage from "./pages/LoginPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import ConnectorsPage from "./pages/ConnectorsPage";
+import ExistingConnectorsPage from "./pages/ExistingConnectorsPage";
+import KnowledgeBaseCatalogPage from "./pages/KnowledgeBaseCatalogPage";
+import KnowledgeBaseDetailPage from "./pages/KnowledgeBaseDetailPage";
+import PlaceholderPage from "./pages/PlaceholderPage";
+import { isAuthenticated } from "./lib/auth";
 
-const NAV = [
-  { id: "search", label: "Retrieval Search", icon: IconSearch },
-  { id: "knowledge", label: "Knowledge Base", icon: IconDatabase },
-];
+function LoginRedirect({ children }) {
+  if (isAuthenticated()) {
+    return <Navigate to="/projects" replace />;
+  }
+  return children;
+}
 
 export default function App() {
-  const [view, setView] = useState("search");
-  const [systemReady, setSystemReady] = useState(false);
-  const [stats, setStats] = useState({
-    total_documents: 0,
-    total_chunks: 0,
-  });
-
-  const refreshStats = async () => {
-    try {
-      const data = await api.getStats();
-      setStats(data);
-    } catch {}
-  };
-
-  useEffect(() => {
-    const checkHealth = async () => {
-      try {
-        const res = await api.health();
-        if (res.status === "ok") {
-          setSystemReady(true);
-          refreshStats();
-        }
-      } catch {
-        setTimeout(checkHealth, 2500);
-      }
-    };
-    checkHealth();
-  }, []);
-
   return (
-    <div className="app">
-      <Topbar systemReady={systemReady} stats={stats} />
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <LoginRedirect>
+            <LoginPage />
+          </LoginRedirect>
+        }
+      />
 
-      <div className="app-nav-wrap">
-        <nav className="app-nav">
-          {NAV.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              className={`app-nav-item ${view === id ? "active" : ""}`}
-              onClick={() => setView(id)}
-            >
-              <Icon size={16} />
-              {label}
-            </button>
-          ))}
-        </nav>
-      </div>
+      <Route
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <ProjectsPage />
+          </ProtectedRoute>
+        }
+      />
 
-      <main className="main">
-        {view === "search" && (
-          <SearchPanel
-            systemReady={systemReady}
-            onNavigate={setView}
-          />
-        )}
-        {view === "knowledge" && (
-          <KnowledgeBase onStatsChange={refreshStats} />
-        )}
-      </main>
-    </div>
+      <Route
+        path="/projects/:projectId"
+        element={
+          <ProtectedRoute>
+            <ProjectShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route
+          path="dashboard"
+          element={
+            <PlaceholderPage
+              title="Dashboard"
+              description="Project overview and key risk metrics."
+            />
+          }
+        />
+        <Route
+          path="entities"
+          element={
+            <PlaceholderPage
+              title="Entities"
+              description="Manage organizations, vendors, and business entities."
+            />
+          }
+        />
+        <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />
+        <Route path="knowledge/:kbId" element={<KnowledgeBaseDetailPage />} />
+        <Route path="connectors" element={<ConnectorsPage />} />
+        <Route path="connectors/existing" element={<ExistingConnectorsPage />} />
+        <Route
+          path="pipelines"
+          element={
+            <PlaceholderPage
+              title="Data Pipelines"
+              description="Configure ingestion and transformation pipelines."
+            />
+          }
+        />
+        <Route
+          path="agents"
+          element={
+            <PlaceholderPage
+              title="Agents"
+              description="Build and deploy intelligent risk agents."
+            />
+          }
+        />
+        <Route
+          path="tools"
+          element={
+            <PlaceholderPage
+              title="Tools"
+              description="Register tools available to agents and workflows."
+            />
+          }
+        />
+        <Route
+          path="mcp"
+          element={
+            <PlaceholderPage
+              title="MCP Servers"
+              description="Connect Model Context Protocol servers."
+            />
+          }
+        />
+        <Route
+          path="workflows"
+          element={
+            <PlaceholderPage
+              title="Workflows"
+              description="Design multi-step automated workflows."
+            />
+          }
+        />
+      </Route>
+
+      <Route
+        path="*"
+        element={
+          <Navigate to={isAuthenticated() ? "/projects" : "/login"} replace />
+        }
+      />
+    </Routes>
   );
 }

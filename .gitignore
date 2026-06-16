@@ -16,6 +16,8 @@ build/
 backend/chroma_db/
 backend/data/ingested_docs.json
 backend/ingested_docs.json
+backend/data/configured_connectors.json
+backend/data/uploads/
 
 # Environment
 .env

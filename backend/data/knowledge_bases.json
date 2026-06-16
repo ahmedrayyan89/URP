@@ -1,0 +1,53 @@
+[
+  {
+    "id": "hr_policies",
+    "project_id": "acme-corp-risk",
+    "name": "HR Policies",
+    "description": "Company HR policies including PTO, remote work, and code of conduct. Used by agents for employee policy Q&A.",
+    "type": "unstructured",
+    "indexing_strategy": "semantic",
+    "vector_db": "chromadb",
+    "knowledge_graph": false,
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "data_source": {
+      "kind": "connectors",
+      "file_name": null,
+      "connector_ids": []
+    },
+    "created_at": "2024-01-15T10:00:00+00:00"
+  },
+  {
+    "id": "benefits_lookup",
+    "project_id": "acme-corp-risk",
+    "name": "Benefits Lookup",
+    "description": "Structured benefits tables — health plans, 401k match, and PTO accrual rates for precise lookups.",
+    "type": "structured",
+    "indexing_strategy": "fixed_size",
+    "vector_db": "chromadb",
+    "knowledge_graph": false,
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "data_source": {
+      "kind": "file_upload",
+      "file_name": null,
+      "connector_ids": []
+    },
+    "created_at": "2024-02-01T10:00:00+00:00"
+  },
+  {
+    "id": "cto",
+    "project_id": "acme-corp-risk",
+    "name": "CTO",
+    "description": "HI",
+    "type": "structured",
+    "indexing_strategy": "semantic",
+    "vector_db": "chromadb",
+    "knowledge_graph": false,
+    "embedding_model": "text-embedding-3-small",
+    "data_source": {
+      "kind": "file_upload",
+      "file_name": "patient_record_2025_annual_review.pdf",
+      "connector_ids": []
+    },
+    "created_at": "2026-06-16T11:20:29.541362+00:00"
+  }
+]

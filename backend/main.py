@@ -13,6 +13,8 @@ from retrieval.reranker import CrossEncoderReranker
 from retrieval.search import HybridSearcher
 from routers.ingestion_router import router as ingestion_router
 from routers.knowledge_router import router as knowledge_router
+from routers.connectors_router import router as connectors_router
+from routers.knowledge_bases_router import router as knowledge_bases_router
 from routers.retrieval_router import router as retrieval_router
 from routers.structured_router import router as structured_router
 
@@ -87,6 +89,8 @@ app.include_router(ingestion_router)
 app.include_router(knowledge_router)
 app.include_router(retrieval_router)
 app.include_router(structured_router)
+app.include_router(connectors_router)
+app.include_router(knowledge_bases_router)
 
 
 @app.get("/api/health")

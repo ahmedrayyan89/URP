@@ -61,6 +61,40 @@ export const api = {
       body: JSON.stringify({ rows }),
     }),
 
+  // Connectors
+  listConnectors: (projectId) =>
+    req(`/connectors?project_id=${encodeURIComponent(projectId)}`),
+  uploadFileConnector: async (projectId, file, name = "") => {
+    const form = new FormData();
+    form.append("project_id", projectId);
+    form.append("file", file);
+    if (name) form.append("name", name);
+    const res = await fetch(`${BASE}/connectors/file`, {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(
+        typeof err.detail === "string" ? err.detail : "Upload failed"
+      );
+    }
+    return res.json();
+  },
+
+  // Knowledge bases
+  listKnowledgeBases: (projectId) =>
+    req(`/knowledge-bases?project_id=${encodeURIComponent(projectId)}`),
+  getKnowledgeBase: (kbId) => req(`/knowledge-bases/${kbId}`),
+  createKnowledgeBase: (payload) =>
+    req("/knowledge-bases", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  deleteKnowledgeBase: (kbId) =>
+    req(`/knowledge-bases/${kbId}`, { method: "DELETE" }),
+
   // Retrieval
   search: (payload) =>
     req("/retrieval/search", {
