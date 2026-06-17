@@ -57,7 +57,7 @@ class IngestionPipeline:
         return self._metadata.get(doc_id)
 
     async def ingest_stream(
-        self, document: Document
+        self, document: Document, kb_id: str | None = None
     ) -> AsyncGenerator[dict, None]:
         yield {
             "stage": "start",
@@ -72,6 +72,11 @@ class IngestionPipeline:
         }
 
         chunks = self.chunker.chunk(document)
+        effective_kb_id = kb_id or document.metadata.get("kb_id", "_legacy")
+        for chunk in chunks:
+            chunk.metadata["kb_id"] = effective_kb_id
+            chunk.metadata.setdefault("doc_type", document.doc_type)
+            chunk.metadata.setdefault("source", document.source)
 
         yield {
             "stage": "chunking_complete",

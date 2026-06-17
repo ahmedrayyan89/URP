@@ -5,16 +5,27 @@
     "name": "HR Policies",
     "description": "Company HR policies including PTO, remote work, and code of conduct. Used by agents for employee policy Q&A.",
     "type": "unstructured",
-    "indexing_strategy": "semantic",
-    "vector_db": "chromadb",
-    "knowledge_graph": false,
-    "embedding_model": "BAAI/bge-small-en-v1.5",
-    "data_source": {
-      "kind": "connectors",
-      "file_name": null,
-      "connector_ids": []
+    "chunking_config": {
+      "strategy": "semantic",
+      "chunk_size": 512,
+      "overlap": 64
     },
-    "created_at": "2024-01-15T10:00:00+00:00"
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": null,
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2024-01-15T10:00:00+00:00",
+    "updated_at": "2024-01-15T10:00:00+00:00"
   },
   {
     "id": "benefits_lookup",
@@ -22,16 +33,27 @@
     "name": "Benefits Lookup",
     "description": "Structured benefits tables — health plans, 401k match, and PTO accrual rates for precise lookups.",
     "type": "structured",
-    "indexing_strategy": "fixed_size",
-    "vector_db": "chromadb",
-    "knowledge_graph": false,
-    "embedding_model": "BAAI/bge-small-en-v1.5",
-    "data_source": {
-      "kind": "file_upload",
-      "file_name": null,
-      "connector_ids": []
+    "chunking_config": {
+      "strategy": "fixed_size",
+      "chunk_size": 512,
+      "overlap": 64
     },
-    "created_at": "2024-02-01T10:00:00+00:00"
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": null,
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2024-02-01T10:00:00+00:00",
+    "updated_at": "2024-02-01T10:00:00+00:00"
   },
   {
     "id": "cto",
@@ -39,15 +61,115 @@
     "name": "CTO",
     "description": "HI",
     "type": "structured",
-    "indexing_strategy": "semantic",
-    "vector_db": "chromadb",
-    "knowledge_graph": false,
-    "embedding_model": "text-embedding-3-small",
-    "data_source": {
-      "kind": "file_upload",
-      "file_name": "patient_record_2025_annual_review.pdf",
-      "connector_ids": []
+    "chunking_config": {
+      "strategy": "semantic",
+      "chunk_size": 512,
+      "overlap": 64
     },
-    "created_at": "2026-06-16T11:20:29.541362+00:00"
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": null,
+    "data_sources": [
+      {
+        "kind": "file_upload",
+        "file_name": "patient_record_2025_annual_review.pdf"
+      }
+    ],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-16T11:20:29.541362+00:00",
+    "updated_at": "2026-06-16T11:20:29.541362+00:00"
+  },
+  {
+    "id": "jiswd",
+    "project_id": "internal-audit",
+    "name": "jiswd",
+    "description": "dwd",
+    "type": "unstructured",
+    "chunking_config": {
+      "strategy": "sliding_window",
+      "chunk_size": 960,
+      "overlap": 80
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-jiswd",
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-17T07:35:42.394147+00:00",
+    "updated_at": "2026-06-17T07:35:42.420242+00:00"
+  },
+  {
+    "id": "new_doc",
+    "project_id": "internal-audit",
+    "name": "New doc",
+    "description": "sas",
+    "type": "unstructured",
+    "chunking_config": {
+      "strategy": "fixed_size",
+      "chunk_size": 1536,
+      "overlap": 208
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-new_doc",
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-17T07:36:42.699282+00:00",
+    "updated_at": "2026-06-17T07:36:42.721882+00:00"
+  },
+  {
+    "id": "ds",
+    "project_id": "acme-corp-risk",
+    "name": "ds",
+    "description": "dsds",
+    "type": "unstructured",
+    "chunking_config": {
+      "strategy": "semantic",
+      "chunk_size": 512,
+      "overlap": 64
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-ds",
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 1,
+    "chunk_count": 2,
+    "error_message": null,
+    "created_at": "2026-06-17T08:59:00.278529+00:00",
+    "updated_at": "2026-06-17T08:59:03.282552+00:00"
   }
 ]

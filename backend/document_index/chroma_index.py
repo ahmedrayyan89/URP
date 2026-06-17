@@ -44,6 +44,7 @@ class ChromaDocumentIndex:
                     "source": c.metadata.get("source", ""),
                     "doc_type": c.metadata.get("doc_type", ""),
                     "category": c.metadata.get("category", "unstructured"),
+                    "kb_id": c.metadata.get("kb_id", "_legacy"),
                     "created_at": c.metadata.get("created_at", ""),
                     "start_char": c.start_char,
                     "end_char": c.end_char,
@@ -124,6 +125,12 @@ class ChromaDocumentIndex:
         return sorted(
             chunks, key=lambda x: x["metadata"].get("chunk_index", 0)
         )
+
+    def count_chunks_for_kb(self, kb_id: str) -> int:
+        if self.collection.count() == 0:
+            return 0
+        results = self.collection.get(where={"kb_id": kb_id}, include=[])
+        return len(results.get("ids", []))
 
     def collection_stats(self) -> dict:
         return {"total_chunks": self.collection.count()}

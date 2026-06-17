@@ -1,31 +1,60 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
-import UnstructuredPanel from "../components/knowledge/UnstructuredPanel";
-import StructuredPanel from "../components/knowledge/StructuredPanel";
-import { useProject } from "../layouts/ProjectShell";
-import { IconSettings } from "../components/layout/Icons";
+import KBOverviewTab from "../components/knowledge/kb-detail/KBOverviewTab";
+import KBDocumentsTab from "../components/knowledge/kb-detail/KBDocumentsTab";
+import KBTestQueryTab from "../components/knowledge/kb-detail/KBTestQueryTab";
+import KBApiTab from "../components/knowledge/kb-detail/KBApiTab";
+import KBSettingsTab from "../components/knowledge/kb-detail/KBSettingsTab";
 
-function ConfigChip({ label }) {
-  return <span className="kb-config-chip">{label}</span>;
-}
+const TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "documents", label: "Documents" },
+  { id: "test", label: "Test query" },
+  { id: "api", label: "API" },
+  { id: "settings", label: "Settings" },
+];
 
 export default function KnowledgeBaseDetailPage() {
   const { projectId, kbId } = useParams();
   const navigate = useNavigate();
-  const { refreshStats } = useProject();
   const [kb, setKb] = useState(null);
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const loadKb = useCallback(async () => {
+    const data = await api.getKnowledgeBase(kbId);
+    setKb(data);
+    return data;
+  }, [kbId]);
+
+  const loadStatus = useCallback(async () => {
+    const data = await api.getKbStatus(kbId);
+    setStatus(data);
+    return data;
+  }, [kbId]);
 
   useEffect(() => {
-    api
-      .getKnowledgeBase(kbId)
-      .then(setKb)
+    Promise.all([loadKb(), loadStatus()])
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [kbId]);
+  }, [loadKb, loadStatus]);
+
+  useEffect(() => {
+    if (!kb || (status?.status !== "indexing" && status?.status !== "initializing")) {
+      return undefined;
+    }
+    const interval = setInterval(() => {
+      loadStatus().then((s) => {
+        if (s.status === "ready" || s.status === "error") {
+          loadKb();
+        }
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [kb, status?.status, loadKb, loadStatus]);
 
   if (loading) {
     return (
@@ -52,11 +81,8 @@ export default function KnowledgeBaseDetailPage() {
     );
   }
 
-  const typeLabel =
-    kb.type === "structured" ? "Structured" : "Unstructured";
-
   return (
-    <div className="shell-page shell-page--flush kb-detail-page">
+    <div className="shell-page kb-detail-page">
       <div className="kb-detail-header">
         <div className="kb-detail-header-left">
           <button
@@ -67,49 +93,49 @@ export default function KnowledgeBaseDetailPage() {
             ← Knowledge Bases
           </button>
           <h1 className="kb-detail-title">{kb.name}</h1>
-          <div className="kb-detail-chips">
-            <ConfigChip label={typeLabel} />
-            <ConfigChip label={kb.vector_db} />
-            <ConfigChip label={kb.embedding_model} />
-          </div>
+          <p className="kb-detail-sub text-sm text-muted">
+            Retrieval layer — search across documents to answer questions.
+          </p>
         </div>
-        <button
-          type="button"
-          className="btn btn-ghost btn-sm"
-          onClick={() => setShowSettings(!showSettings)}
-          title="View configuration"
-        >
-          <IconSettings size={18} />
-        </button>
       </div>
 
-      {showSettings && (
-        <div className="card kb-settings-card mb-2">
-          <h3 className="kb-settings-title">Configuration</h3>
-          <dl className="kb-settings-list">
-            <dt>Description</dt>
-            <dd>{kb.description || "—"}</dd>
-            <dt>Indexing Strategy</dt>
-            <dd>{kb.indexing_strategy}</dd>
-            <dt>Knowledge Graph</dt>
-            <dd>{kb.knowledge_graph ? "Enabled" : "Disabled"}</dd>
-            <dt>Data Source</dt>
-            <dd>
-              {kb.data_source?.kind === "connectors"
-                ? `Connectors (${(kb.data_source.connector_ids || []).length})`
-                : kb.data_source?.kind === "file_upload"
-                  ? `File: ${kb.data_source.file_name || "—"}`
-                  : kb.data_source?.kind || "—"}
-            </dd>
-          </dl>
-        </div>
-      )}
+      <div className="kb-detail-tabs">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`kb-detail-tab ${activeTab === tab.id ? "active" : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <div className="kb-detail-body">
-        {kb.type === "structured" ? (
-          <StructuredPanel />
-        ) : (
-          <UnstructuredPanel onRefresh={refreshStats} />
+      <div className="kb-detail-content">
+        {activeTab === "overview" && (
+          <KBOverviewTab kb={kb} status={status} />
+        )}
+        {activeTab === "documents" && (
+          <KBDocumentsTab
+            kbId={kbId}
+            kb={kb}
+            onRefresh={() => {
+              loadKb();
+              loadStatus();
+            }}
+          />
+        )}
+        {activeTab === "test" && <KBTestQueryTab kbId={kbId} />}
+        {activeTab === "api" && <KBApiTab kbId={kbId} />}
+        {activeTab === "settings" && (
+          <KBSettingsTab
+            kb={kb}
+            onUpdated={() => {
+              loadKb();
+              loadStatus();
+            }}
+          />
         )}
       </div>
     </div>

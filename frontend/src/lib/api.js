@@ -86,14 +86,142 @@ export const api = {
   listKnowledgeBases: (projectId) =>
     req(`/knowledge-bases?project_id=${encodeURIComponent(projectId)}`),
   getKnowledgeBase: (kbId) => req(`/knowledge-bases/${kbId}`),
+  getKbStatus: (kbId) => req(`/knowledge-bases/${kbId}/status`),
   createKnowledgeBase: (payload) =>
     req("/knowledge-bases", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }),
+  updateKnowledgeBase: (kbId, payload) =>
+    req(`/knowledge-bases/${kbId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
   deleteKnowledgeBase: (kbId) =>
     req(`/knowledge-bases/${kbId}`, { method: "DELETE" }),
+  listKbDocuments: (kbId) => req(`/knowledge-bases/${kbId}/documents`),
+  uploadKbDocument: async (kbId, file) => {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`${BASE}/knowledge-bases/${kbId}/documents`, {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(
+        typeof err.detail === "string" ? err.detail : "Upload failed"
+      );
+    }
+    return res.json();
+  },
+  deleteKbDocument: (kbId, docId) =>
+    req(`/knowledge-bases/${kbId}/documents/${docId}`, { method: "DELETE" }),
+  reindexKbDocument: (kbId, docId) =>
+    req(`/knowledge-bases/${kbId}/documents/${docId}/reindex`, { method: "POST" }),
+  reindexKnowledgeBase: (kbId) =>
+    req(`/knowledge-bases/${kbId}/reindex`, { method: "POST" }),
+  queryKnowledgeBase: (kbId, payload) =>
+    req(`/knowledge-bases/${kbId}/query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+
+  // Entity definitions
+  listEntityDefinitions: (projectId) =>
+    req(`/entity-definitions?project_id=${encodeURIComponent(projectId)}`),
+  getEntityDefinition: (id) => req(`/entity-definitions/${id}`),
+  createEntityDefinition: (payload) =>
+    req("/entity-definitions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  updateEntityDefinition: (id, payload) =>
+    req(`/entity-definitions/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  deleteEntityDefinition: (id) =>
+    req(`/entity-definitions/${id}`, { method: "DELETE" }),
+
+  // Entity instances
+  listAllEntityInstances: (projectId, status) => {
+    const params = new URLSearchParams();
+    if (projectId) params.set("project_id", projectId);
+    if (status) params.set("status", status);
+    const q = params.toString();
+    return req(`/entities/instances${q ? `?${q}` : ""}`);
+  },
+  getEntityInstance: (instanceId) => req(`/entities/instances/${instanceId}`),
+  listEntityInstances: (slug, projectId, status) => {
+    const params = new URLSearchParams({ project_id: projectId });
+    if (status) params.set("status", status);
+    return req(`/entities/${slug}?${params}`);
+  },
+  createEntityInstance: (slug, payload) =>
+    req(`/entities/${slug}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  updateEntityInstance: (slug, instanceId, projectId, payload) =>
+    req(`/entities/${slug}/${instanceId}?project_id=${encodeURIComponent(projectId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  deleteEntityInstance: (slug, instanceId) =>
+    req(`/entities/${slug}/${instanceId}`, { method: "DELETE" }),
+
+  // Agents
+  listAgents: (projectId) =>
+    req(`/agents?project_id=${encodeURIComponent(projectId)}`),
+  getAgent: (id) => req(`/agents/${id}`),
+  createImportedAgent: (payload) =>
+    req("/agents/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  createBuiltAgent: (payload) =>
+    req("/agents/built", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  updateAgent: (id, payload) =>
+    req(`/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  deleteAgent: (id) => req(`/agents/${id}`, { method: "DELETE" }),
+  duplicateAgent: (id) => req(`/agents/${id}/duplicate`, { method: "POST" }),
+  testAgentConnectionPreview: (payload) =>
+    req("/agents/test-connection", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  testAgentConnection: (id, payload) =>
+    req(`/agents/${id}/test-connection`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload || {}),
+    }),
+  invokeAgent: (id, payload) =>
+    req(`/agents/${id}/invoke`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  listAgentInvocations: (id, limit = 50) =>
+    req(`/agents/${id}/invocations?limit=${limit}`),
 
   // Retrieval
   search: (payload) =>

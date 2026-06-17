@@ -7,6 +7,13 @@ import ConnectorsPage from "./pages/ConnectorsPage";
 import ExistingConnectorsPage from "./pages/ExistingConnectorsPage";
 import KnowledgeBaseCatalogPage from "./pages/KnowledgeBaseCatalogPage";
 import KnowledgeBaseDetailPage from "./pages/KnowledgeBaseDetailPage";
+import EntitiesPage from "./pages/EntitiesPage";
+import CreateEntityDefinitionPage from "./pages/CreateEntityDefinitionPage";
+import EntityDefinitionDetailPage from "./pages/EntityDefinitionDetailPage";
+import EntityInstanceDetailPage from "./pages/EntityInstanceDetailPage";
+import AgentsPage from "./pages/AgentsPage";
+import CreateAgentBuilderPage from "./pages/CreateAgentBuilderPage";
+import AgentDetailPage from "./pages/AgentDetailPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import { isAuthenticated } from "./lib/auth";
 
@@ -58,13 +65,11 @@ export default function App() {
         />
         <Route
           path="entities"
-          element={
-            <PlaceholderPage
-              title="Entities"
-              description="Manage organizations, vendors, and business entities."
-            />
-          }
+          element={<EntitiesPage />}
         />
+        <Route path="entities/definitions/new" element={<CreateEntityDefinitionPage />} />
+        <Route path="entities/definitions/:defId" element={<EntityDefinitionDetailPage />} />
+        <Route path="entities/instances/:instanceId" element={<EntityInstanceDetailPage />} />
         <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />
         <Route path="knowledge/:kbId" element={<KnowledgeBaseDetailPage />} />
         <Route path="connectors" element={<ConnectorsPage />} />
@@ -78,15 +83,9 @@ export default function App() {
             />
           }
         />
-        <Route
-          path="agents"
-          element={
-            <PlaceholderPage
-              title="Agents"
-              description="Build and deploy intelligent risk agents."
-            />
-          }
-        />
+        <Route path="agents" element={<AgentsPage />} />
+        <Route path="agents/new" element={<CreateAgentBuilderPage />} />
+        <Route path="agents/:agentId" element={<AgentDetailPage />} />
         <Route
           path="tools"
           element={

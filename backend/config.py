@@ -32,6 +32,16 @@ class Settings(BaseSettings):
         "http://localhost:3000",
     ]
 
+    # Onyx (optional — stub used when disabled)
+    onyx_enabled: bool = False
+    onyx_base_url: str = ""
+    onyx_api_key: str = ""
+
+    # Agents / ADK
+    gemini_api_key: str = ""
+    urp_encryption_key: str = ""
+    google_search_api_key: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

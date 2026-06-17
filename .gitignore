@@ -18,6 +18,12 @@ backend/data/ingested_docs.json
 backend/ingested_docs.json
 backend/data/configured_connectors.json
 backend/data/uploads/
+backend/data/kb_uploads/
+backend/data/kb_documents.json
+backend/data/entity_definitions.json
+backend/data/entity_instances.json
+backend/data/agents.json
+backend/data/agent_invocations.json
 
 # Environment
 .env

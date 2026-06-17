@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
-import KBCylinder from "../components/knowledge/KBCylinder";
-import CreateKnowledgeBaseModal from "../components/knowledge/CreateKnowledgeBaseModal";
-import { IconDatabase, IconPlus, IconSearch } from "../components/layout/Icons";
+import KBCard from "../components/knowledge/KBCard";
+import CreateKBWizard from "../components/knowledge/CreateKBWizard";
+import { IconPlus, IconSearch } from "../components/layout/Icons";
 
 export default function KnowledgeBaseCatalogPage() {
   const { projectId } = useParams();
@@ -42,11 +42,23 @@ export default function KnowledgeBaseCatalogPage() {
 
   return (
     <div className="shell-page kb-catalog-page">
-      <div className="kb-catalog-header">
-        <div className="kb-catalog-title-row">
-          <div className="kb-catalog-title">
-            <IconDatabase size={22} />
-            <h1 className="shell-page-title">Knowledge Bases</h1>
+      <div className="kb-catalog-header-ref">
+        <div className="kb-catalog-header-left">
+          <h1 className="shell-page-title">Knowledge Bases</h1>
+          <p className="shell-page-sub">
+            Manage and organize your knowledge base content for agent retrieval.
+          </p>
+        </div>
+        <div className="kb-catalog-header-right">
+          <div className="kb-catalog-search-ref">
+            <IconSearch size={16} />
+            <input
+              type="text"
+              className="connectors-search-input"
+              placeholder="Search knowledge base..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </div>
           <button
             type="button"
@@ -54,23 +66,8 @@ export default function KnowledgeBaseCatalogPage() {
             onClick={() => setShowCreate(true)}
           >
             <IconPlus size={16} />
-            New KB
+            New Knowledge Base
           </button>
-        </div>
-        <p className="shell-page-sub">
-          Create and manage unstructured and structured knowledge bases for
-          agent retrieval.
-        </p>
-
-        <div className="kb-catalog-search">
-          <IconSearch size={16} />
-          <input
-            type="text"
-            className="connectors-search-input"
-            placeholder="Search KBs..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
         </div>
       </div>
 
@@ -102,9 +99,9 @@ export default function KnowledgeBaseCatalogPage() {
           )}
         </div>
       ) : (
-        <div className="kb-catalog-grid">
+        <div className="kb-card-grid">
           {filtered.map((kb) => (
-            <KBCylinder
+            <KBCard
               key={kb.id}
               kb={kb}
               onClick={() =>
@@ -116,7 +113,7 @@ export default function KnowledgeBaseCatalogPage() {
       )}
 
       {showCreate && (
-        <CreateKnowledgeBaseModal
+        <CreateKBWizard
           projectId={projectId}
           onClose={() => setShowCreate(false)}
           onCreated={handleCreated}

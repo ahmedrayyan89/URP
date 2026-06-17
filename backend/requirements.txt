@@ -1,11 +1,19 @@
-fastapi==0.111.0
-uvicorn[standard]==0.29.0
+fastapi==0.137.1
+uvicorn[standard]==0.49.0
 python-multipart==0.0.9
 sentence-transformers==3.0.1
 chromadb==0.5.3
 rank-bm25==0.2.2
 numpy==1.26.4
-pydantic==2.10.3
+pydantic==2.13.4
 pydantic-settings==2.14.1
 aiofiles==23.2.1
 python-dotenv==1.0.1
+httpx==0.28.1
+cryptography==49.0.0
+jsonschema==4.26.0
+google-adk==2.2.0
+# google-adk pins otel<=1.41.1, but chromadb needs 1.42.x — install ADK first, then these:
+opentelemetry-api==1.42.1
+opentelemetry-sdk==1.42.1
+opentelemetry-semantic-conventions==0.63b1
