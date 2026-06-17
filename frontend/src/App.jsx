@@ -7,6 +7,7 @@ import ConnectorsPage from "./pages/ConnectorsPage";
 import ExistingConnectorsPage from "./pages/ExistingConnectorsPage";
 import KnowledgeBaseCatalogPage from "./pages/KnowledgeBaseCatalogPage";
 import KnowledgeBaseDetailPage from "./pages/KnowledgeBaseDetailPage";
+import DocumentIntelligencePage from "./pages/DocumentIntelligencePage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import { isAuthenticated } from "./lib/auth";
 
@@ -67,6 +68,7 @@ export default function App() {
         />
         <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />
         <Route path="knowledge/:kbId" element={<KnowledgeBaseDetailPage />} />
+        <Route path="document-intelligence" element={<DocumentIntelligencePage />} />
         <Route path="connectors" element={<ConnectorsPage />} />
         <Route path="connectors/existing" element={<ExistingConnectorsPage />} />
         <Route
