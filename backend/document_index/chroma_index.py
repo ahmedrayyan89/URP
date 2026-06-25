@@ -48,6 +48,7 @@ class ChromaDocumentIndex:
                     "created_at": c.metadata.get("created_at", ""),
                     "start_char": c.start_char,
                     "end_char": c.end_char,
+                    "summary": c.metadata.get("summary", ""),
                 }
                 for c in chunks
             ],
@@ -118,6 +119,7 @@ class ChromaDocumentIndex:
             {
                 "chunk_id": chunk_id,
                 "content": results["documents"][i],
+                "summary": results["metadatas"][i].get("summary", ""),
                 "metadata": results["metadatas"][i],
             }
             for i, chunk_id in enumerate(results["ids"])

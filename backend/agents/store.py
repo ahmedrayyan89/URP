@@ -35,6 +35,8 @@ class CreateImportedAgentPayload(BaseModel):
     description: str = ""
     endpoint_url: str
     auth_config: AuthConfigPayload = Field(default_factory=AuthConfigPayload)
+    import_platform: str | None = None
+    platform_config: dict = Field(default_factory=dict)
     icon_color: str = "#3b82f6"
     status: str = "draft"
 
@@ -47,10 +49,14 @@ class CreateBuiltAgentPayload(BaseModel):
     model: str = "gemini-2.5-flash"
     temperature: float = 0.7
     icon_color: str = "#3b82f6"
+    framework: str = "adk"
+    graph_id: str | None = None
+    agent_role: str | None = None
     tools: list[ToolConfigPayload] = Field(default_factory=list)
     attached_knowledge_bases: list[str] = Field(default_factory=list)
     attached_mcp_servers: list[McpServerPayload] = Field(default_factory=list)
     attached_entities: list[str] = Field(default_factory=list)
+    attached_tool_ids: list[str] = Field(default_factory=list)
     status: str = "draft"
 
 
@@ -64,10 +70,14 @@ class UpdateAgentPayload(BaseModel):
     system_prompt: str | None = None
     model: str | None = None
     temperature: float | None = None
+    framework: str | None = None
+    graph_id: str | None = None
+    agent_role: str | None = None
     tools: list[ToolConfigPayload] | None = None
     attached_knowledge_bases: list[str] | None = None
     attached_mcp_servers: list[McpServerPayload] | None = None
     attached_entities: list[str] | None = None
+    attached_tool_ids: list[str] | None = None
 
 
 def _now() -> str:
@@ -135,6 +145,8 @@ def create_imported_agent(payload: CreateImportedAgentPayload) -> dict:
         "framework": "external",
         "endpoint_url": payload.endpoint_url.strip(),
         "auth_config": auth,
+        "import_platform": payload.import_platform,
+        "platform_config": payload.platform_config,
         "system_prompt": None,
         "model": None,
         "temperature": None,
@@ -142,6 +154,7 @@ def create_imported_agent(payload: CreateImportedAgentPayload) -> dict:
         "attached_knowledge_bases": [],
         "attached_mcp_servers": [],
         "attached_entities": [],
+        "attached_tool_ids": [],
         "created_at": _now(),
         "updated_at": _now(),
     }
@@ -178,7 +191,9 @@ def create_built_agent(payload: CreateBuiltAgentPayload) -> dict:
         "source": "built",
         "status": payload.status,
         "icon_color": payload.icon_color,
-        "framework": "adk",
+        "framework": payload.framework,
+        "graph_id": payload.graph_id,
+        "agent_role": payload.agent_role,
         "endpoint_url": None,
         "auth_config": None,
         "system_prompt": payload.system_prompt,
@@ -188,6 +203,7 @@ def create_built_agent(payload: CreateBuiltAgentPayload) -> dict:
         "attached_knowledge_bases": payload.attached_knowledge_bases,
         "attached_mcp_servers": mcp_servers,
         "attached_entities": payload.attached_entities,
+        "attached_tool_ids": payload.attached_tool_ids,
         "created_at": _now(),
         "updated_at": _now(),
     }
@@ -205,7 +221,7 @@ def update_agent(agent_id: str, payload: UpdateAgentPayload) -> dict:
         fields = {}
         for key in ("name", "description", "status", "icon_color", "endpoint_url",
                     "system_prompt", "model", "temperature", "attached_knowledge_bases",
-                    "attached_entities"):
+                    "attached_entities", "attached_tool_ids", "framework", "graph_id", "agent_role"):
             val = getattr(payload, key, None)
             if val is not None:
                 fields[key] = val.strip() if isinstance(val, str) else val

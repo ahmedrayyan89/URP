@@ -1,0 +1,471 @@
+[
+  {
+    "case_id": "CASE-2026-XOM-010",
+    "project_id": "procure-guard-demo",
+    "scenario_id": "case_010",
+    "label": "Downstream — Beaumont Refinery Expansion Turnaround",
+    "risk_score": 100,
+    "severity_band": "Critical",
+    "financial_exposure": 108573.1,
+    "status": "open",
+    "process_flags": [
+      "late_bid_accepted",
+      "late_bid_accepted",
+      "po_exceeds_contract",
+      "no_amendment_on_file",
+      "unexplained_bid_to_contract_increase",
+      "escalation_cap_breach",
+      "buyer_acknowledged_price_violation"
+    ],
+    "price_matrix": [
+      {
+        "line_id": "1",
+        "description": "Turnaround professional services labor",
+        "bid_unit_price": 128.05,
+        "contract_unit_price": 143.42,
+        "po_unit_price": 169.24,
+        "invoice_unit_price": 169.24,
+        "quantity": 4205.0,
+        "variance": 25.82,
+        "exposure": 108573.1
+      }
+    ],
+    "extractions": [
+      {
+        "id": "CTR-00010-unit-price",
+        "doc": "CTR-00010",
+        "field": "contract_unit_price",
+        "value": "$143.42",
+        "numeric_value": 143.42,
+        "confidence": 0.95,
+        "page": 1,
+        "section": "SECTION 2 — PRICING",
+        "start_char": 312,
+        "end_char": 321,
+        "snippet": "FORTY-THREE DOLLARS AND FORTY-TWO CENTS ($143.42) per hour.\n\nSECTION 3 — ESCALATION\n3.1 A"
+      },
+      {
+        "id": "CTR-00010-escalation-cap",
+        "doc": "CTR-00010",
+        "field": "escalation_cap_pct",
+        "value": "2.6%",
+        "numeric_value": 2.6,
+        "confidence": 0.92,
+        "page": 1,
+        "section": "SECTION 3 — ESCALATION",
+        "start_char": 414,
+        "end_char": 431,
+        "snippet": "N\n3.1 Annual Escalation. Prices may be adjusted annually by no more than 2.6% with written amendment.\n\nAMENDMENTS: 0 amendments on file.\n"
+      },
+      {
+        "id": "CTR-00010-amendments",
+        "doc": "CTR-00010",
+        "field": "amendment_count",
+        "value": "0",
+        "numeric_value": 0.0,
+        "confidence": 1.0,
+        "page": null,
+        "section": "AMENDMENTS",
+        "start_char": null,
+        "end_char": null,
+        "snippet": "AMENDMENTS: 0"
+      },
+      {
+        "id": "email-buyer-ack",
+        "doc": "email",
+        "field": "buyer_price_acknowledgment",
+        "value": "true",
+        "numeric_value": null,
+        "confidence": 0.99,
+        "page": null,
+        "section": "",
+        "start_char": null,
+        "end_char": null,
+        "snippet": "SAP PO price exceeds contract price"
+      }
+    ],
+    "collusion_signals": [
+      {
+        "rule": "identical_file_timestamp",
+        "evidence": "Timestamp 2026-01-09T10:00:00Z shared across: Orion Cloud Systems, BlueOak Industrial",
+        "vendors": [
+          "Orion Cloud Systems",
+          "BlueOak Industrial"
+        ]
+      },
+      {
+        "rule": "suspicious_price_proximity",
+        "evidence": "Orion Cloud Systems ($128.05) and BlueOak Industrial ($130.0) within 2%",
+        "vendors": [
+          "Orion Cloud Systems",
+          "BlueOak Industrial"
+        ]
+      }
+    ],
+    "vendor_profile": {
+      "vendor_id": "VND-ORION",
+      "name": "Orion Cloud Systems",
+      "sanctions_hit": false,
+      "adverse_media": false,
+      "prior_fraud_cases": 0,
+      "risk_tier": "low"
+    },
+    "narrative": "Case CASE-2026-XOM-010 — Risk Score 100/100 (Critical). SAP PO unit price ($169.24) exceeds extracted contract unit price ($143.42). Variance of $25.82 × 4,205 units results in $108,573.10 financial exposure. Transaction flags a price increase breaching the contractually capped escalation limit of 2.6%. Cross-reference with SAP workflow logs confirms unauthorized processing. Buyer email explicitly acknowledges SAP PO price exceeds contract price while requesting expedited processing. A competitor bid was accepted past the Ariba event closing deadline.",
+    "evidence_packet": {
+      "ariba_bids": [
+        {
+          "event_id": "EVT-010-ARIBA",
+          "vendor_id": "VND-ORION",
+          "vendor_name": "Orion Cloud Systems",
+          "bid_timestamp": "2026-01-10T14:00:00Z",
+          "event_close": "2026-01-10T17:00:00Z",
+          "unit_price": "128.05",
+          "total_bid": "225583",
+          "weighted_score": "95",
+          "status": "awarded",
+          "proposal_author": "orion.bid@cloudsys.com",
+          "proposal_created_at": "2026-01-09T10:00:00Z"
+        },
+        {
+          "event_id": "EVT-010-ARIBA",
+          "vendor_id": "VND-HARBOR",
+          "vendor_name": "HarborPoint Services",
+          "bid_timestamp": "2026-01-10T15:30:00Z",
+          "event_close": "2026-01-10T17:00:00Z",
+          "unit_price": "125.00",
+          "total_bid": "218281",
+          "weighted_score": "86",
+          "status": "rejected",
+          "proposal_author": "harbor.proc@services.com",
+          "proposal_created_at": "2026-01-09T11:00:00Z"
+        },
+        {
+          "event_id": "EVT-010-ARIBA",
+          "vendor_id": "VND-BLUEOAK",
+          "vendor_name": "BlueOak Industrial",
+          "bid_timestamp": "2026-01-10T18:30:00Z",
+          "event_close": "2026-01-10T17:00:00Z",
+          "unit_price": "130.00",
+          "total_bid": "230000",
+          "weighted_score": "82",
+          "status": "late_accepted",
+          "proposal_author": "blueoak@industrial.com",
+          "proposal_created_at": "2026-01-09T10:00:00Z"
+        }
+      ],
+      "extractions": [
+        {
+          "id": "CTR-00010-unit-price",
+          "doc": "CTR-00010",
+          "field": "contract_unit_price",
+          "value": "$143.42",
+          "numeric_value": 143.42,
+          "confidence": 0.95,
+          "page": 1,
+          "section": "SECTION 2 — PRICING",
+          "start_char": 312,
+          "end_char": 321,
+          "snippet": "FORTY-THREE DOLLARS AND FORTY-TWO CENTS ($143.42) per hour.\n\nSECTION 3 — ESCALATION\n3.1 A"
+        },
+        {
+          "id": "CTR-00010-escalation-cap",
+          "doc": "CTR-00010",
+          "field": "escalation_cap_pct",
+          "value": "2.6%",
+          "numeric_value": 2.6,
+          "confidence": 0.92,
+          "page": 1,
+          "section": "SECTION 3 — ESCALATION",
+          "start_char": 414,
+          "end_char": 431,
+          "snippet": "N\n3.1 Annual Escalation. Prices may be adjusted annually by no more than 2.6% with written amendment.\n\nAMENDMENTS: 0 amendments on file.\n"
+        },
+        {
+          "id": "CTR-00010-amendments",
+          "doc": "CTR-00010",
+          "field": "amendment_count",
+          "value": "0",
+          "numeric_value": 0.0,
+          "confidence": 1.0,
+          "page": null,
+          "section": "AMENDMENTS",
+          "start_char": null,
+          "end_char": null,
+          "snippet": "AMENDMENTS: 0"
+        },
+        {
+          "id": "email-buyer-ack",
+          "doc": "email",
+          "field": "buyer_price_acknowledgment",
+          "value": "true",
+          "numeric_value": null,
+          "confidence": 0.99,
+          "page": null,
+          "section": "",
+          "start_char": null,
+          "end_char": null,
+          "snippet": "SAP PO price exceeds contract price"
+        }
+      ],
+      "price_matrix": [
+        {
+          "line_id": "1",
+          "description": "Turnaround professional services labor",
+          "bid_unit_price": 128.05,
+          "contract_unit_price": 143.42,
+          "po_unit_price": 169.24,
+          "invoice_unit_price": 169.24,
+          "quantity": 4205.0,
+          "variance": 25.82,
+          "exposure": 108573.1
+        }
+      ],
+      "process_flags": [
+        "late_bid_accepted",
+        "late_bid_accepted",
+        "po_exceeds_contract",
+        "no_amendment_on_file",
+        "unexplained_bid_to_contract_increase",
+        "escalation_cap_breach",
+        "buyer_acknowledged_price_violation"
+      ],
+      "collusion_signals": [
+        {
+          "rule": "identical_file_timestamp",
+          "evidence": "Timestamp 2026-01-09T10:00:00Z shared across: Orion Cloud Systems, BlueOak Industrial",
+          "vendors": [
+            "Orion Cloud Systems",
+            "BlueOak Industrial"
+          ]
+        },
+        {
+          "rule": "suspicious_price_proximity",
+          "evidence": "Orion Cloud Systems ($128.05) and BlueOak Industrial ($130.0) within 2%",
+          "vendors": [
+            "Orion Cloud Systems",
+            "BlueOak Industrial"
+          ]
+        }
+      ],
+      "narrative": "Case CASE-2026-XOM-010 — Risk Score 100/100 (Critical). SAP PO unit price ($169.24) exceeds extracted contract unit price ($143.42). Variance of $25.82 × 4,205 units results in $108,573.10 financial exposure. Transaction flags a price increase breaching the contractually capped escalation limit of 2.6%. Cross-reference with SAP workflow logs confirms unauthorized processing. Buyer email explicitly acknowledges SAP PO price exceeds contract price while requesting expedited processing. A competitor bid was accepted past the Ariba event closing deadline."
+    },
+    "completeness_score": 1.0,
+    "updated_at": "2026-06-24T07:24:01.929851+00:00",
+    "created_at": "2026-06-24T06:42:28.973266+00:00"
+  },
+  {
+    "case_id": "CASE-2026-XOM-011",
+    "project_id": "procure-guard-demo",
+    "scenario_id": "case_011",
+    "label": "Upstream — Permian Basin Drilling Infrastructure",
+    "risk_score": 100,
+    "severity_band": "Critical",
+    "financial_exposure": 512295.0,
+    "status": "open",
+    "process_flags": [
+      "missing_scorecard",
+      "missing_proposal",
+      "emergency_single_source_unsupported",
+      "gr_without_po",
+      "missing_scorecard",
+      "missing_proposal",
+      "emergency_single_source_unsupported",
+      "gr_without_po",
+      "po_exceeds_contract",
+      "no_amendment_on_file",
+      "escalation_cap_breach"
+    ],
+    "price_matrix": [
+      {
+        "line_id": "gr-1",
+        "description": "Goods receipt line",
+        "bid_unit_price": 892.5,
+        "contract_unit_price": 77.2,
+        "po_unit_price": 892.5,
+        "invoice_unit_price": 892.5,
+        "quantity": 574.0,
+        "variance": 815.3,
+        "exposure": 512295.0
+      }
+    ],
+    "extractions": [
+      {
+        "id": "CTR-PERM-2026-escalation-cap",
+        "doc": "CTR-PERM-2026",
+        "field": "escalation_cap_pct",
+        "value": "2.6%",
+        "numeric_value": 2.6,
+        "confidence": 0.92,
+        "page": 14,
+        "section": "SECTION 3.2 — ESCALATION CAPS",
+        "start_char": 308,
+        "end_char": 325,
+        "snippet": "tanding any other provision, unit prices shall not increase by more than 2.6% per contract year without a fully executed Purchase Order a"
+      },
+      {
+        "id": "CTR-PERM-2026-amendments",
+        "doc": "CTR-PERM-2026",
+        "field": "amendment_count",
+        "value": "0",
+        "numeric_value": 0.0,
+        "confidence": 1.0,
+        "page": null,
+        "section": "AMENDMENTS",
+        "start_char": null,
+        "end_char": null,
+        "snippet": "AMENDMENTS: 0"
+      }
+    ],
+    "collusion_signals": [
+      {
+        "rule": "shared_proposal_author",
+        "evidence": "Author permian.ops@drillco.com linked to vendors: Permian DrillCo LLC, RidgeField Energy",
+        "vendors": [
+          "Permian DrillCo LLC",
+          "RidgeField Energy"
+        ]
+      },
+      {
+        "rule": "identical_file_timestamp",
+        "evidence": "Timestamp 2026-01-14T08:00:00Z shared across: Permian DrillCo LLC, RidgeField Energy",
+        "vendors": [
+          "Permian DrillCo LLC",
+          "RidgeField Energy"
+        ]
+      },
+      {
+        "rule": "suspicious_price_proximity",
+        "evidence": "RidgeField Energy ($885.0) and Permian DrillCo LLC ($892.5) within 2%",
+        "vendors": [
+          "RidgeField Energy",
+          "Permian DrillCo LLC"
+        ]
+      }
+    ],
+    "vendor_profile": {
+      "vendor_id": "VND-PERM-DRILL",
+      "name": "Permian DrillCo LLC",
+      "sanctions_hit": false,
+      "adverse_media": true,
+      "prior_fraud_cases": 1,
+      "risk_tier": "medium"
+    },
+    "narrative": "Case CASE-2026-XOM-011 — Risk Score 100/100 (Critical). SAP PO unit price ($892.50) exceeds extracted contract unit price ($77.20). Variance of $815.30 × 574 units results in $512,295.00 financial exposure. Transaction flags a price increase breaching the contractually capped escalation limit of 2.6%. Cross-reference with SAP workflow logs confirms unauthorized processing. Goods Receipt was processed without a corresponding approved Purchase Order amendment.",
+    "evidence_packet": {
+      "ariba_bids": [
+        {
+          "event_id": "EVT-011-ARIBA",
+          "vendor_id": "VND-PERM-DRILL",
+          "vendor_name": "Permian DrillCo LLC",
+          "bid_timestamp": "2026-01-15T09:00:00Z",
+          "event_close": "2026-01-15T12:00:00Z",
+          "unit_price": "892.50",
+          "total_bid": "511732",
+          "weighted_score": "100",
+          "status": "awarded",
+          "proposal_author": "permian.ops@drillco.com",
+          "proposal_created_at": "2026-01-14T08:00:00Z",
+          "sourcing_type": "emergency_single_source"
+        },
+        {
+          "event_id": "EVT-011-ARIBA",
+          "vendor_id": "VND-RIDGE",
+          "vendor_name": "RidgeField Energy",
+          "bid_timestamp": "2026-01-14T16:00:00Z",
+          "event_close": "2026-01-15T12:00:00Z",
+          "unit_price": "885.00",
+          "total_bid": "505000",
+          "weighted_score": "0",
+          "status": "withdrawn",
+          "proposal_author": "permian.ops@drillco.com",
+          "proposal_created_at": "2026-01-14T08:00:00Z",
+          "sourcing_type": "emergency_single_source"
+        }
+      ],
+      "extractions": [
+        {
+          "id": "CTR-PERM-2026-escalation-cap",
+          "doc": "CTR-PERM-2026",
+          "field": "escalation_cap_pct",
+          "value": "2.6%",
+          "numeric_value": 2.6,
+          "confidence": 0.92,
+          "page": 14,
+          "section": "SECTION 3.2 — ESCALATION CAPS",
+          "start_char": 308,
+          "end_char": 325,
+          "snippet": "tanding any other provision, unit prices shall not increase by more than 2.6% per contract year without a fully executed Purchase Order a"
+        },
+        {
+          "id": "CTR-PERM-2026-amendments",
+          "doc": "CTR-PERM-2026",
+          "field": "amendment_count",
+          "value": "0",
+          "numeric_value": 0.0,
+          "confidence": 1.0,
+          "page": null,
+          "section": "AMENDMENTS",
+          "start_char": null,
+          "end_char": null,
+          "snippet": "AMENDMENTS: 0"
+        }
+      ],
+      "price_matrix": [
+        {
+          "line_id": "gr-1",
+          "description": "Goods receipt line",
+          "bid_unit_price": 892.5,
+          "contract_unit_price": 77.2,
+          "po_unit_price": 892.5,
+          "invoice_unit_price": 892.5,
+          "quantity": 574.0,
+          "variance": 815.3,
+          "exposure": 512295.0
+        }
+      ],
+      "process_flags": [
+        "missing_scorecard",
+        "missing_proposal",
+        "emergency_single_source_unsupported",
+        "gr_without_po",
+        "missing_scorecard",
+        "missing_proposal",
+        "emergency_single_source_unsupported",
+        "gr_without_po",
+        "po_exceeds_contract",
+        "no_amendment_on_file",
+        "escalation_cap_breach"
+      ],
+      "collusion_signals": [
+        {
+          "rule": "shared_proposal_author",
+          "evidence": "Author permian.ops@drillco.com linked to vendors: Permian DrillCo LLC, RidgeField Energy",
+          "vendors": [
+            "Permian DrillCo LLC",
+            "RidgeField Energy"
+          ]
+        },
+        {
+          "rule": "identical_file_timestamp",
+          "evidence": "Timestamp 2026-01-14T08:00:00Z shared across: Permian DrillCo LLC, RidgeField Energy",
+          "vendors": [
+            "Permian DrillCo LLC",
+            "RidgeField Energy"
+          ]
+        },
+        {
+          "rule": "suspicious_price_proximity",
+          "evidence": "RidgeField Energy ($885.0) and Permian DrillCo LLC ($892.5) within 2%",
+          "vendors": [
+            "RidgeField Energy",
+            "Permian DrillCo LLC"
+          ]
+        }
+      ],
+      "narrative": "Case CASE-2026-XOM-011 — Risk Score 100/100 (Critical). SAP PO unit price ($892.50) exceeds extracted contract unit price ($77.20). Variance of $815.30 × 574 units results in $512,295.00 financial exposure. Transaction flags a price increase breaching the contractually capped escalation limit of 2.6%. Cross-reference with SAP workflow logs confirms unauthorized processing. Goods Receipt was processed without a corresponding approved Purchase Order amendment."
+    },
+    "completeness_score": 0.25,
+    "updated_at": "2026-06-24T07:24:01.967537+00:00",
+    "created_at": "2026-06-24T06:42:29.102358+00:00"
+  }
+]

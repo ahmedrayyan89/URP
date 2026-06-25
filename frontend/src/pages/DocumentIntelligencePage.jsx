@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 // ── Icons ──────────────────────────────────────────────────────────────────
 function IconCopy({ size = 14, className = "" }) {
   return (
@@ -84,15 +86,15 @@ const PARSERS = [
 const ENDPOINTS = [
   {
     method: "POST",
-    path: "/api/v1/document-intelligence/upload",
+    path: "/api/document-intelligence/upload",
     description:
-      "Upload a document. Agent extracts structured JSON based on selected parser type and saves it as an entity.",
+      "Upload a document. Agent extracts structured JSON based on selected parser type.",
   },
   {
     method: "POST",
-    path: "/api/v1/document-intelligence/process-folder",
+    path: "/api/document-intelligence/extract",
     description:
-      "Provide a GCS folder path. Agent watches the folder and processes all documents found.",
+      "Extract clauses and pricing from raw text (contract or email).",
   },
 ];
 
@@ -206,6 +208,8 @@ function UploadSection() {
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [extractResult, setExtractResult] = useState(null);
+  const [error, setError] = useState(null);
   const fileInputRef = useRef();
 
   const acceptedTypes = ".pdf,.docx,.png,.jpg,.jpeg";
@@ -223,17 +227,35 @@ function UploadSection() {
     handleFile(f);
   };
 
-  const handleProcess = () => {
+  const handleProcess = async () => {
     if (!file) return;
     setLoading(true);
     setSuccess(false);
-    setTimeout(() => {
-      setLoading(false);
+    setError(null);
+    setExtractResult(null);
+    try {
+      const docType = parser === "po" ? "contract" : parser;
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch(
+        `${BASE}/document-intelligence/upload?doc_type=${encodeURIComponent(docType)}`,
+        { method: "POST", body: form }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Extraction failed");
+      }
+      const data = await res.json();
+      setExtractResult(data);
       setSuccess(true);
-    }, 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const result = MOCK_RESULTS[parser];
+  const result = extractResult || (success ? null : MOCK_RESULTS[parser]);
 
   return (
     <div className="di-upload-section">
@@ -326,6 +348,8 @@ function UploadSection() {
           )}
         </button>
       </div>
+
+      {error && <div className="alert alert-error mt-2">{error}</div>}
 
       {/* Success state */}
       {success && (

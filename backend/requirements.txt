@@ -13,6 +13,12 @@ httpx==0.28.1
 cryptography==49.0.0
 jsonschema==4.26.0
 google-adk==2.2.0
+pypdf>=4.0.0
+langgraph>=0.2.0
+langchain-core>=0.3.0
+langchain-google-genai>=2.0.0
+networkx>=3.0
+pandas>=2.0.0
 # google-adk pins otel<=1.41.1, but chromadb needs 1.42.x — install ADK first, then these:
 opentelemetry-api==1.42.1
 opentelemetry-sdk==1.42.1

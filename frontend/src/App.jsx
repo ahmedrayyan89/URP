@@ -15,6 +15,9 @@ import EntityInstanceDetailPage from "./pages/EntityInstanceDetailPage";
 import AgentsPage from "./pages/AgentsPage";
 import CreateAgentBuilderPage from "./pages/CreateAgentBuilderPage";
 import AgentDetailPage from "./pages/AgentDetailPage";
+import ToolsPage from "./pages/ToolsPage";
+import ProcurementDashboardPage from "./pages/ProcurementDashboardPage";
+import CaseDetailPage from "./pages/CaseDetailPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import { isAuthenticated } from "./lib/auth";
 
@@ -57,13 +60,9 @@ export default function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route
           path="dashboard"
-          element={
-            <PlaceholderPage
-              title="Dashboard"
-              description="Project overview and key risk metrics."
-            />
-          }
+          element={<ProcurementDashboardPage />}
         />
+        <Route path="cases/:caseId" element={<CaseDetailPage />} />
         <Route
           path="entities"
           element={<EntitiesPage />}
@@ -88,15 +87,7 @@ export default function App() {
         <Route path="agents" element={<AgentsPage />} />
         <Route path="agents/new" element={<CreateAgentBuilderPage />} />
         <Route path="agents/:agentId" element={<AgentDetailPage />} />
-        <Route
-          path="tools"
-          element={
-            <PlaceholderPage
-              title="Tools"
-              description="Register tools available to agents and workflows."
-            />
-          }
-        />
+        <Route path="tools" element={<ToolsPage />} />
         <Route
           path="mcp"
           element={

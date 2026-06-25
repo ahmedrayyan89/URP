@@ -22,7 +22,16 @@ export default function AgentCard({ agent, onClick, onEdit, onDuplicate, onDelet
   }, []);
 
   const status = agent.status || "draft";
-  const sourceLabel = agent.source === "built" ? "AI AGENT" : "IMPORTED";
+  const platformTag = agent.import_platform
+    ? agent.import_platform.toUpperCase()
+    : null;
+  const sourceLabel = agent.source === "built" && agent.framework === "langgraph"
+    ? "LANGGRAPH"
+    : agent.source === "built"
+      ? "AI AGENT"
+      : platformTag
+        ? `IMPORTED · ${platformTag}`
+        : "IMPORTED";
 
   return (
     <div className="agent-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && onClick?.()}>

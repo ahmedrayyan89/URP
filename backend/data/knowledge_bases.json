@@ -15,17 +15,17 @@
       "use_bm25": true,
       "use_knowledge_graph": false
     },
-    "onyx_document_set_id": null,
+    "onyx_document_set_id": "stub-hr_policies",
     "data_sources": [],
     "structured_table_ids": [],
     "connection_config": null,
     "status": "ready",
     "indexing_progress": 100,
-    "document_count": 0,
-    "chunk_count": 0,
+    "document_count": 2,
+    "chunk_count": 219,
     "error_message": null,
     "created_at": "2024-01-15T10:00:00+00:00",
-    "updated_at": "2024-01-15T10:00:00+00:00"
+    "updated_at": "2026-06-23T13:35:39.306579+00:00"
   },
   {
     "id": "benefits_lookup",
@@ -54,39 +54,6 @@
     "error_message": null,
     "created_at": "2024-02-01T10:00:00+00:00",
     "updated_at": "2024-02-01T10:00:00+00:00"
-  },
-  {
-    "id": "cto",
-    "project_id": "acme-corp-risk",
-    "name": "CTO",
-    "description": "HI",
-    "type": "structured",
-    "chunking_config": {
-      "strategy": "semantic",
-      "chunk_size": 512,
-      "overlap": 64
-    },
-    "retrieval_config": {
-      "use_vector": true,
-      "use_bm25": true,
-      "use_knowledge_graph": false
-    },
-    "onyx_document_set_id": null,
-    "data_sources": [
-      {
-        "kind": "file_upload",
-        "file_name": "patient_record_2025_annual_review.pdf"
-      }
-    ],
-    "structured_table_ids": [],
-    "connection_config": null,
-    "status": "ready",
-    "indexing_progress": 100,
-    "document_count": 0,
-    "chunk_count": 0,
-    "error_message": null,
-    "created_at": "2026-06-16T11:20:29.541362+00:00",
-    "updated_at": "2026-06-16T11:20:29.541362+00:00"
   },
   {
     "id": "jiswd",
@@ -171,5 +138,91 @@
     "error_message": null,
     "created_at": "2026-06-17T08:59:00.278529+00:00",
     "updated_at": "2026-06-17T08:59:03.282552+00:00"
+  },
+  {
+    "id": "hello",
+    "project_id": "acme-corp-risk",
+    "name": "hello",
+    "description": "d",
+    "type": "structured",
+    "chunking_config": {
+      "strategy": "semantic",
+      "chunk_size": 512,
+      "overlap": 64
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-hello",
+    "data_sources": [],
+    "structured_table_ids": [
+      "retirement_financial_benefits"
+    ],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 1,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-18T05:16:08.856981+00:00",
+    "updated_at": "2026-06-18T05:16:08.873034+00:00"
+  },
+  {
+    "id": "erfer",
+    "project_id": "acme-corp-risk",
+    "name": "erfer",
+    "description": "erer",
+    "type": "unstructured",
+    "chunking_config": {
+      "strategy": "semantic",
+      "chunk_size": 896,
+      "overlap": 64
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-erfer",
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-18T05:26:23.225513+00:00",
+    "updated_at": "2026-06-18T05:26:23.240946+00:00"
+  },
+  {
+    "id": "edwe",
+    "project_id": "acme-corp-risk",
+    "name": "edwe",
+    "description": "edf",
+    "type": "unstructured",
+    "chunking_config": {
+      "strategy": "fixed_size",
+      "chunk_size": 704,
+      "overlap": 96
+    },
+    "retrieval_config": {
+      "use_vector": true,
+      "use_bm25": true,
+      "use_knowledge_graph": false
+    },
+    "onyx_document_set_id": "stub-edwe",
+    "data_sources": [],
+    "structured_table_ids": [],
+    "connection_config": null,
+    "status": "ready",
+    "indexing_progress": 100,
+    "document_count": 0,
+    "chunk_count": 0,
+    "error_message": null,
+    "created_at": "2026-06-23T06:10:04.240982+00:00",
+    "updated_at": "2026-06-23T06:10:04.258505+00:00"
   }
 ]

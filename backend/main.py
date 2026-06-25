@@ -19,6 +19,9 @@ from routers.entities_router import router as entities_router
 from routers.connectors_router import router as connectors_router
 from routers.knowledge_bases_router import router as knowledge_bases_router
 from routers.retrieval_router import router as retrieval_router
+from routers.document_intelligence_router import router as document_intelligence_router
+from routers.procurement_router import router as procurement_router
+from routers.tools_router import router as tools_router
 from routers.structured_router import router as structured_router
 
 logging.basicConfig(
@@ -68,6 +71,17 @@ async def lifespan(app: FastAPI):
         logger.info(f"BM25 bootstrapped: {len(existing)} chunks")
 
     logger.info("Unified Risk Platform ready")
+
+    try:
+        from procurement.seed_agents import seed_agents
+        from procurement.seed_entities import seed_entity_definitions
+
+        seed_entity_definitions()
+        seed_agents()
+        logger.info("Procure Guard agents and entities seeded")
+    except Exception as exc:
+        logger.warning("Procure Guard seed skipped: %s", exc)
+
     yield
 
     logger.info("Shutting down")
@@ -97,6 +111,9 @@ app.include_router(knowledge_bases_router)
 app.include_router(entity_definitions_router)
 app.include_router(entities_router)
 app.include_router(agents_router)
+app.include_router(tools_router)
+app.include_router(procurement_router)
+app.include_router(document_intelligence_router)
 
 
 @app.get("/api/health")

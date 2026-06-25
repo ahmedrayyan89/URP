@@ -1,0 +1,15 @@
+{
+  "gr_number": "GR-500011",
+  "po_number": null,
+  "po_amendment_approved": false,
+  "vendor_id": "VND-PERM-DRILL",
+  "vendor_name": "Permian DrillCo LLC",
+  "contract_id": "CTR-PERM-2026",
+  "contract_unit_price": 77.20,
+  "gr_unit_price": 892.50,
+  "quantity": 574,
+  "workflow_bypass": true,
+  "goods_receipt_without_po": true,
+  "buyer": "Field Operations — Permian",
+  "status": "posted"
+}

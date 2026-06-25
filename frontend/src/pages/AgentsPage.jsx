@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import AgentCard from "../components/agents/AgentCard";
+import ImportAgentDropdown from "../components/agents/ImportAgentDropdown";
 import ImportAgentModal from "../components/agents/ImportAgentModal";
 import { IconPlus, IconSearch } from "../components/layout/Icons";
 
@@ -13,7 +14,7 @@ export default function AgentsPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [showImport, setShowImport] = useState(false);
+  const [importPlatform, setImportPlatform] = useState(null);
 
   const load = () => {
     setLoading(true);
@@ -83,17 +84,17 @@ export default function AgentsPage() {
             <option value="building">Building</option>
             <option value="error">Error</option>
           </select>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowImport(true)}>
-            Import existing
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={() => navigate(`/projects/${projectId}/agents/new`)}
-          >
-            <IconPlus size={16} />
-            Create from scratch
-          </button>
+          <div className="header-actions-group">
+            <ImportAgentDropdown onSelect={(platform) => setImportPlatform(platform)} />
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => navigate(`/projects/${projectId}/agents/new`)}
+            >
+              <IconPlus size={16} />
+              Create from scratch
+            </button>
+          </div>
         </div>
       </div>
 
@@ -122,12 +123,13 @@ export default function AgentsPage() {
         </div>
       )}
 
-      {showImport && (
+      {importPlatform && (
         <ImportAgentModal
           projectId={projectId}
-          onClose={() => setShowImport(false)}
+          platform={importPlatform}
+          onClose={() => setImportPlatform(null)}
           onSuccess={(agent) => {
-            setShowImport(false);
+            setImportPlatform(null);
             navigate(`/projects/${projectId}/agents/${agent.id}`);
           }}
         />

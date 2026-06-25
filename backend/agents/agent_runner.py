@@ -5,6 +5,7 @@ from fastapi import HTTPException
 
 from agents.adk_runner import invoke_built_agent
 from agents.import_proxy import invoke_imported
+from agents.langgraph_runner import invoke_langgraph_agent
 from agents.invocations_store import log_invocation
 from agents.store import get_agent
 
@@ -31,6 +32,10 @@ async def invoke_agent(
                 query,
                 session_id,
                 context,
+            )
+        elif agent.get("framework") == "langgraph":
+            output = await asyncio.to_thread(
+                invoke_langgraph_agent, agent, query, session_id, context
             )
         else:
             output = await asyncio.to_thread(invoke_built_agent, agent, query, session_id, context)

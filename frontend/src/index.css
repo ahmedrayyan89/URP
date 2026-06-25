@@ -1190,6 +1190,174 @@ html, body, #root {
   line-height: 1.7;
 }
 
+/* ── KB document split view ─────────────────────────────────────── */
+.kb-doc-row-clickable { cursor: pointer; }
+.kb-doc-row-clickable:hover { background: var(--bg); }
+
+.kb-doc-split-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.kb-doc-split-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.kb-doc-split-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.kb-doc-split-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  min-height: 480px;
+}
+
+.kb-doc-pane {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.kb-doc-pane-label {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.kb-doc-content-pre,
+.kb-doc-pane .chunk-list {
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.kb-chunk-card { margin: 0; }
+.kb-chunk-summary {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.kb-chunk-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.kb-chunk-full {
+  font-size: 12px;
+  white-space: pre-wrap;
+  margin: 8px 0 0;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: var(--r);
+  max-height: 200px;
+  overflow: auto;
+}
+
+.audit-contract-pre { font-size: 13px; }
+
+/* ── Procurement case dashboard ─────────────────────────────────── */
+.case-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.case-card { padding: 18px; cursor: pointer; transition: box-shadow var(--t); }
+.case-card:hover { box-shadow: var(--shadow-md); }
+
+.case-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.case-id { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.case-label { font-size: 13px; color: var(--text-2); margin: 0 0 12px; line-height: 1.5; }
+.case-metrics { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+
+.case-score-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.case-score-critical { background: #fef2f2; color: #dc2626; }
+.case-score-high { background: #fff7ed; color: #ea580c; }
+.case-score-medium { background: #f0fdf4; color: #16a34a; }
+
+.audit-highlight { background: #fef08a; padding: 0 2px; }
+.audit-reasoning-box {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+/* ── Tools catalog ───────────────────────────────────────────────── */
+.tool-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tool-card { padding: 16px; }
+.tool-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tool-card-name { margin: 0; font-size: 16px; }
+.tool-card-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.tool-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tool-card-endpoint {
+  font-size: 11px;
+  background: var(--bg);
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  word-break: break-all;
+}
+.tool-card-actions { display: flex; justify-content: flex-end; }
+.danger-text { color: #dc2626; }
+
+@media (max-width: 900px) {
+  .kb-doc-split-panes { grid-template-columns: 1fr; }
+}
+
 /* ── Search ──────────────────────────────────────────────────────── */
 .search-wrap {
   display: flex;
@@ -2094,6 +2262,29 @@ input[type="range"] {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.import-dropdown-wrap {
+  position: relative;
+}
+
+.import-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.import-dropdown-menu {
+  left: 0;
+  right: auto;
+  min-width: 180px;
 }
 
 .kb-catalog-search-ref {

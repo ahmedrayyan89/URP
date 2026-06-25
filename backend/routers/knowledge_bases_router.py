@@ -4,6 +4,9 @@ from pydantic import BaseModel
 from knowledge_bases import store
 from knowledge_bases.kb_service import (
     create_kb,
+    get_kb_document,
+    get_kb_document_chunks,
+    get_kb_document_content,
     get_kb_status,
     list_kb_documents,
     query_kb,
@@ -71,6 +74,21 @@ async def kb_documents(kb_id: str):
 @router.post("/{kb_id}/documents")
 async def kb_upload_document(kb_id: str, file: UploadFile = File(...)):
     return await upload_kb_document(kb_id, file)
+
+
+@router.get("/{kb_id}/documents/{doc_id}")
+async def kb_get_document(kb_id: str, doc_id: str):
+    return get_kb_document(kb_id, doc_id)
+
+
+@router.get("/{kb_id}/documents/{doc_id}/content")
+async def kb_get_document_content(kb_id: str, doc_id: str):
+    return get_kb_document_content(kb_id, doc_id)
+
+
+@router.get("/{kb_id}/documents/{doc_id}/chunks")
+async def kb_get_document_chunks(kb_id: str, doc_id: str):
+    return get_kb_document_chunks(kb_id, doc_id)
 
 
 @router.post("/{kb_id}/documents/{doc_id}/reindex")

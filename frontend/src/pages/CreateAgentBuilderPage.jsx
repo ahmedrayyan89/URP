@@ -26,11 +26,13 @@ export default function CreateAgentBuilderPage() {
   const [model, setModel] = useState("gemini-2.5-flash");
   const [temperature, setTemperature] = useState(0.7);
   const [kbIds, setKbIds] = useState([]);
+  const [toolIds, setToolIds] = useState([]);
   const [entityIds, setEntityIds] = useState([]);
   const [webSearchKey, setWebSearchKey] = useState("");
   const [mcpServers, setMcpServers] = useState([]);
   const [mcpForm, setMcpForm] = useState({ name: "", url: "", credentials: "" });
   const [kbs, setKbs] = useState([]);
+  const [registeredTools, setRegisteredTools] = useState([]);
   const [entities, setEntities] = useState([]);
   const [draftAgentId, setDraftAgentId] = useState(null);
   const [testQuery, setTestQuery] = useState("");
@@ -41,9 +43,11 @@ export default function CreateAgentBuilderPage() {
   useEffect(() => {
     api.listKnowledgeBases(projectId).then((d) => setKbs(d.knowledge_bases || [])).catch(() => {});
     api.listEntityDefinitions(projectId).then((d) => setEntities(d.definitions || [])).catch(() => {});
+    api.listTools(projectId).then((d) => setRegisteredTools(d.tools || [])).catch(() => {});
   }, [projectId]);
 
   const toggleKb = (id) => setKbIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+  const toggleTool = (id) => setToolIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const toggleEntity = (id) => setEntityIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   const buildPayload = (status) => ({
@@ -55,6 +59,7 @@ export default function CreateAgentBuilderPage() {
     temperature,
     icon_color: iconColor,
     attached_knowledge_bases: kbIds,
+    attached_tool_ids: toolIds,
     attached_entities: entityIds,
     attached_mcp_servers: mcpServers,
     tools: webSearchKey
@@ -169,10 +174,25 @@ export default function CreateAgentBuilderPage() {
         )}
         {step === 3 && (
           <>
+            <p className="text-sm text-muted mb-2">Attach registered tools from the Tools catalog.</p>
+            <div className="connector-checklist mb-2">
+              {registeredTools.length === 0 ? (
+                <p className="text-sm text-muted">No tools registered yet. Add one in the Tools section.</p>
+              ) : (
+                registeredTools.map((tool) => (
+                  <label key={tool.id} className="connector-check-item">
+                    <input type="checkbox" checked={toolIds.includes(tool.id)} onChange={() => toggleTool(tool.id)} />
+                    <span>{tool.name}</span>
+                    {tool.config?.endpoint && (
+                      <code className="text-xs">POST {tool.config.endpoint}</code>
+                    )}
+                  </label>
+                ))
+              )}
+            </div>
             <div className="form-row"><label className="form-label">Web Search — Google API key</label>
               <input className="input" type="password" value={webSearchKey} onChange={(e) => setWebSearchKey(e.target.value)} placeholder="Optional" />
             </div>
-            <button type="button" className="btn btn-ghost btn-sm" disabled>+ Add custom tool (coming soon)</button>
           </>
         )}
         {step === 4 && (
@@ -214,6 +234,7 @@ export default function CreateAgentBuilderPage() {
             <dt>Name</dt><dd>{name || "—"}</dd>
             <dt>Model</dt><dd>{model}</dd>
             <dt>KBs</dt><dd>{kbIds.length}</dd>
+            <dt>Tools</dt><dd>{toolIds.length}</dd>
             <dt>Entities</dt><dd>{entityIds.length}</dd>
             <dt>MCP</dt><dd>{mcpServers.length}</dd>
           </dl>
