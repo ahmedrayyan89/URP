@@ -1,12 +1,16 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 from config import get_settings
 from document_index.chroma_index import ChromaDocumentIndex
+from entities.models.entity_model import Base as DIBase
 from ingestion.embedder import DocumentEmbedder
 from ingestion.pipeline import IngestionPipeline
 from retrieval.reranker import CrossEncoderReranker
@@ -20,6 +24,7 @@ from routers.connectors_router import router as connectors_router
 from routers.knowledge_bases_router import router as knowledge_bases_router
 from routers.retrieval_router import router as retrieval_router
 from routers.structured_router import router as structured_router
+from routers.document_intelligence import router as di_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,6 +33,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+# ── SQLite async engine (Document Intelligence) ───────────────────
+DATABASE_URL = "sqlite+aiosqlite:///./db.sqlite3"
+engine = create_async_engine(DATABASE_URL, echo=False)
+async_session_factory = sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
+
+
+async def init_db() -> None:
+    """Create all DI tables on startup (no Alembic in v1)."""
+    async with engine.begin() as conn:
+        await conn.run_sync(DIBase.metadata.create_all)
+    logger.info("DI database tables initialised (db.sqlite3)")
+
 
 # ── Globals ───────────────────────────────────────────────────────
 document_index: ChromaDocumentIndex = None
@@ -45,6 +65,19 @@ async def lifespan(app: FastAPI):
 
     # Ensure data directory exists
     Path("./data").mkdir(exist_ok=True)
+
+    # ── Fail fast if required DI env vars are missing ──────────────
+    _azure_endpoint = os.environ.get("AZURE_DI_ENDPOINT", "")
+    _azure_key      = os.environ.get("AZURE_DI_KEY", "")
+    if not _azure_endpoint or not _azure_key:
+        logger.warning(
+            "AZURE_DI_ENDPOINT or AZURE_DI_KEY is not set. "
+            "Document Intelligence upload endpoint will fail at runtime. "
+            "Set these in your .env file to enable document processing."
+        )
+
+    # ── Initialise DI SQLite database ─────────────────────────────
+    await init_db()
 
     document_index = ChromaDocumentIndex(
         persist_dir=settings.chroma_db_path
@@ -97,6 +130,7 @@ app.include_router(knowledge_bases_router)
 app.include_router(entity_definitions_router)
 app.include_router(entities_router)
 app.include_router(agents_router)
+app.include_router(di_router, prefix="/api/v1")
 
 
 @app.get("/api/health")

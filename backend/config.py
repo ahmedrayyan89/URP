@@ -42,6 +42,13 @@ class Settings(BaseSettings):
     urp_encryption_key: str = ""
     google_search_api_key: str = ""
 
+    # Document Intelligence (Azure AI Document Intelligence)
+    azure_di_endpoint: str = ""   # AZURE_DI_ENDPOINT env var
+    azure_di_key: str = ""        # AZURE_DI_KEY env var
+
+    # OpenAI (used for PO parser LLM extraction step)
+    openai_api_key: str = ""      # OPENAI_API_KEY env var
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
