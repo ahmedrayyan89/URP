@@ -102,6 +102,12 @@ export const api = {
   deleteKnowledgeBase: (kbId) =>
     req(`/knowledge-bases/${kbId}`, { method: "DELETE" }),
   listKbDocuments: (kbId) => req(`/knowledge-bases/${kbId}/documents`),
+  getKbDocument: (kbId, docId) =>
+    req(`/knowledge-bases/${kbId}/documents/${docId}`),
+  getKbDocumentContent: (kbId, docId) =>
+    req(`/knowledge-bases/${kbId}/documents/${docId}/content`),
+  getKbDocumentChunks: (kbId, docId) =>
+    req(`/knowledge-bases/${kbId}/documents/${docId}/chunks`),
   uploadKbDocument: async (kbId, file) => {
     const form = new FormData();
     form.append("file", file);
@@ -222,6 +228,46 @@ export const api = {
     }),
   listAgentInvocations: (id, limit = 50) =>
     req(`/agents/${id}/invocations?limit=${limit}`),
+
+  // Tools registry
+  listTools: (projectId) =>
+    req(`/tools?project_id=${encodeURIComponent(projectId)}`),
+  getTool: (id) => req(`/tools/${id}`),
+  createTool: (payload) =>
+    req("/tools", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  updateTool: (id, payload) =>
+    req(`/tools/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  deleteTool: (id) => req(`/tools/${id}`, { method: "DELETE" }),
+
+  // Procurement / Procure Guard
+  listProcurementCases: () => req("/procurement/cases"),
+  getProcurementCase: (caseId) =>
+    req(`/procurement/cases/${encodeURIComponent(caseId)}`),
+  runProcurementCase: (payload) =>
+    req("/procurement/cases/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
+  seedProcurementDemo: () =>
+    req("/procurement/cases/seed-demo", { method: "POST" }),
+  escalateProcurementCase: (caseId) =>
+    req(`/procurement/cases/${encodeURIComponent(caseId)}/escalate`, { method: "POST" }),
+
+  extractDocument: (payload) =>
+    req("/document-intelligence/extract", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }),
 
   // Retrieval
   search: (payload) =>

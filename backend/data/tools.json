@@ -1,0 +1,32 @@
+[
+  {
+    "id": "a3a4717b-7914-4269-bbb4-880fd368aaf2",
+    "project_id": "acme-corp-risk",
+    "name": "New tool",
+    "description": "New tool as context to the agent",
+    "type": "kb_retrieval",
+    "config": {
+      "kb_id": "hr_policies",
+      "kb_name": "HR Policies",
+      "endpoint": "/api/knowledge-bases/hr_policies/query"
+    },
+    "status": "active",
+    "created_at": "2026-06-23T13:38:31.089778+00:00",
+    "updated_at": "2026-06-23T13:38:31.089793+00:00"
+  },
+  {
+    "id": "3b0be8ce-3058-45e1-b5cd-b591fdb80141",
+    "project_id": "acme-corp-risk",
+    "name": "Tool 2",
+    "description": "Another context to agent",
+    "type": "kb_retrieval",
+    "config": {
+      "kb_id": "benefits_lookup",
+      "kb_name": "Benefits Lookup",
+      "endpoint": "/api/knowledge-bases/benefits_lookup/query"
+    },
+    "status": "active",
+    "created_at": "2026-06-23T13:38:49.279611+00:00",
+    "updated_at": "2026-06-23T13:38:49.279638+00:00"
+  }
+]

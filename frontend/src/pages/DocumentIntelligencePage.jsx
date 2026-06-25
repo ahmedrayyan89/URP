@@ -270,6 +270,7 @@ function ParserUploadPanel({ parser, onClose }) {
     } finally {
       setLoading(false);
     }
+    }
   };
 
   // Build accept string from parser.accepts if available

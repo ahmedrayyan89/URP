@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../../lib/api";
 import { IconUpload, IconTrash } from "../../layout/Icons";
+import KBDocumentSplitView from "./KBDocumentSplitView";
 
 function formatBytes(bytes) {
   if (!bytes) return "—";
@@ -18,6 +19,7 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedDocId, setSelectedDocId] = useState(null);
   const fileRef = useRef(null);
 
   const load = () => {
@@ -32,6 +34,8 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
   useEffect(() => {
     load();
   }, [kbId]);
+
+  const selectedDoc = docs.find((d) => d.doc_id === selectedDocId);
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -64,6 +68,7 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
     if (!window.confirm("Remove this document from the knowledge base?")) return;
     try {
       await api.deleteKbDocument(kbId, docId);
+      if (selectedDocId === docId) setSelectedDocId(null);
       load();
       onRefresh?.();
     } catch (err) {
@@ -82,6 +87,21 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
             <li key={id}>{id}</li>
           ))}
         </ul>
+      </div>
+    );
+  }
+
+  if (selectedDocId && selectedDoc) {
+    return (
+      <div className="kb-tab-panel">
+        <KBDocumentSplitView
+          kbId={kbId}
+          docId={selectedDocId}
+          docMeta={selectedDoc}
+          onBack={() => setSelectedDocId(null)}
+          onReindex={() => handleReindex(selectedDocId)}
+          onRemove={() => handleRemove(selectedDocId)}
+        />
       </div>
     );
   }
@@ -109,12 +129,13 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
       ) : (
         <div className="card">
           <div className="data-table-wrap">
-            <table className="data-table">
+            <table className="data-table kb-doc-table">
               <thead>
                 <tr>
                   <th>Title</th>
                   <th>Source</th>
                   <th>Size</th>
+                  <th>Chunks</th>
                   <th>Status</th>
                   <th>Indexed</th>
                   <th></th>
@@ -122,13 +143,18 @@ export default function KBDocumentsTab({ kbId, kb, onRefresh }) {
               </thead>
               <tbody>
                 {docs.map((d) => (
-                  <tr key={d.doc_id}>
+                  <tr
+                    key={d.doc_id}
+                    className="kb-doc-row-clickable"
+                    onClick={() => setSelectedDocId(d.doc_id)}
+                  >
                     <td>{d.title}</td>
                     <td>{d.source}</td>
                     <td>{formatBytes(d.file_size)}</td>
+                    <td>{d.chunk_count ?? "—"}</td>
                     <td><span className="badge badge-grey">{d.status}</span></td>
                     <td>{formatDate(d.indexed_at)}</td>
-                    <td>
+                    <td onClick={(e) => e.stopPropagation()}>
                       <div className="kb-doc-actions">
                         <button type="button" className="btn btn-ghost btn-sm" onClick={() => handleReindex(d.doc_id)}>
                           Re-index

@@ -1,0 +1,13 @@
+{
+  "invoice_number": "INV-ORION-2026-0042",
+  "po_number": "4500000010",
+  "vendor_id": "VND-ORION",
+  "lines": [
+    {
+      "line_id": 1,
+      "quantity": 4205,
+      "unit_price": 169.24,
+      "total": 711655.2
+    }
+  ]
+}

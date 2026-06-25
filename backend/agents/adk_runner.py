@@ -60,12 +60,28 @@ def invoke_built_agent(
         return f"Agent execution error: {exc}"
 
 
+def _collect_kb_ids(agent: dict) -> list[str]:
+    kb_ids: set[str] = set(agent.get("attached_knowledge_bases") or [])
+    for tool_id in agent.get("attached_tool_ids") or []:
+        try:
+            from tools.store import get_tool
+
+            registered = get_tool(tool_id)
+            if registered.get("type") == "kb_retrieval":
+                kb_id = (registered.get("config") or {}).get("kb_id")
+                if kb_id:
+                    kb_ids.add(kb_id)
+        except Exception:
+            logger.warning("Skipping unknown tool id: %s", tool_id)
+    return list(kb_ids)
+
+
 def _build_tools(agent: dict) -> list:
     from google.adk.tools import FunctionTool
 
     tools = []
 
-    for kb_id in agent.get("attached_knowledge_bases") or []:
+    for kb_id in _collect_kb_ids(agent):
         tool_fn = _make_kb_tool(kb_id)
         if tool_fn:
             tools.append(FunctionTool(tool_fn))

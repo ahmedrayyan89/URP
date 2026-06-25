@@ -1,0 +1,42 @@
+[
+  {
+    "vendor_id": "VND-ORION",
+    "name": "Orion Cloud Systems",
+    "sanctions_hit": false,
+    "adverse_media": false,
+    "prior_fraud_cases": 0,
+    "risk_tier": "low"
+  },
+  {
+    "vendor_id": "VND-PERM-DRILL",
+    "name": "Permian DrillCo LLC",
+    "sanctions_hit": false,
+    "adverse_media": true,
+    "prior_fraud_cases": 1,
+    "risk_tier": "medium"
+  },
+  {
+    "vendor_id": "VND-HARBOR",
+    "name": "HarborPoint Services",
+    "sanctions_hit": false,
+    "adverse_media": false,
+    "prior_fraud_cases": 0,
+    "risk_tier": "low"
+  },
+  {
+    "vendor_id": "VND-BLUEOAK",
+    "name": "BlueOak Industrial",
+    "sanctions_hit": false,
+    "adverse_media": false,
+    "prior_fraud_cases": 0,
+    "risk_tier": "low"
+  },
+  {
+    "vendor_id": "VND-RIDGE",
+    "name": "RidgeField Energy",
+    "sanctions_hit": false,
+    "adverse_media": false,
+    "prior_fraud_cases": 0,
+    "risk_tier": "low"
+  }
+]

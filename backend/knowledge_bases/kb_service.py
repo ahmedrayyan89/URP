@@ -6,6 +6,7 @@ from fastapi import HTTPException, UploadFile
 from integrations.onyx_client import get_onyx_client
 from knowledge_bases import documents_store, store
 from knowledge_bases.indexing_jobs import reindex_document, schedule_indexing_job
+from knowledge_bases.text_extract import extract_text_from_path
 from knowledge_bases.store import (
     CreateKnowledgeBasePayload,
     UpdateKnowledgeBasePayload,
@@ -112,6 +113,42 @@ def list_kb_documents(kb_id: str) -> list[dict]:
     return documents_store.list_documents(kb_id)
 
 
+def get_kb_document(kb_id: str, doc_id: str) -> dict:
+    get_knowledge_base(kb_id)
+    return documents_store.get_document(kb_id, doc_id)
+
+
+def get_kb_document_content(kb_id: str, doc_id: str) -> dict:
+    doc = get_kb_document(kb_id, doc_id)
+    content = doc.get("content_text") or ""
+    if not content and doc.get("file_path"):
+        path = Path(doc["file_path"])
+        if path.exists():
+            content, _ = extract_text_from_path(path, doc.get("file_name"))
+    return {
+        "doc_id": doc_id,
+        "title": doc.get("title"),
+        "mime_type": doc.get("mime_type"),
+        "content": content,
+        "char_count": len(content),
+    }
+
+
+def get_kb_document_chunks(kb_id: str, doc_id: str) -> dict:
+    get_kb_document(kb_id, doc_id)
+    from main import document_index
+
+    chunks = document_index.get_document_chunks(doc_id)
+    for c in chunks:
+        meta = c.get("metadata") or {}
+        if meta.get("kb_id") and meta["kb_id"] != kb_id:
+            raise HTTPException(
+                status_code=404,
+                detail="Document not found in this knowledge base",
+            )
+    return {"doc_id": doc_id, "chunks": chunks, "count": len(chunks)}
+
+
 async def upload_kb_document(kb_id: str, file: UploadFile) -> dict:
     kb = get_knowledge_base(kb_id)
     if kb.get("type") != "unstructured":
@@ -129,12 +166,16 @@ async def upload_kb_document(kb_id: str, file: UploadFile) -> dict:
         raise HTTPException(status_code=400, detail="File too large (max 10MB)")
     dest.write_bytes(content)
 
+    text, mime = extract_text_from_path(dest, file.filename)
+
     sources = [
         {
             "kind": "file_upload",
             "file_name": file.filename,
             "file_path": str(dest),
             "file_size": len(content),
+            "content_text": text,
+            "mime_type": mime,
         }
     ]
     patch_knowledge_base(kb_id, {"status": "indexing", "indexing_progress": 0})

@@ -26,7 +26,7 @@ def build_table_metadata(table_ids: list[str]) -> list[dict]:
             }
         )
     return metadata
-
+def e
 
 def execute_structured_query(kb: dict, query: str, top_k: int = 5) -> dict:
     """Stub text-to-SQL: returns sample rows from linked structured tables."""

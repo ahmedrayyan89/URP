@@ -2,6 +2,22 @@ from typing import List
 from .models import Document, Chunk
 
 
+import re
+
+
+def extractive_summary(text: str, max_len: int = 160) -> str:
+    """First sentence or truncated preview for chunk display."""
+    cleaned = text.strip()
+    if not cleaned:
+        return ""
+    match = re.search(r"^(.+?[.!?])(?:\s|$)", cleaned, re.DOTALL)
+    if match and len(match.group(1)) <= max_len:
+        return match.group(1).strip()
+    if len(cleaned) <= max_len:
+        return cleaned
+    return cleaned[: max_len - 3].rstrip() + "..."
+
+
 class SemanticChunker:
     def __init__(
         self,
@@ -86,6 +102,7 @@ class SemanticChunker:
                         "doc_type": document.doc_type,
                         "category": document.category,
                         "created_at": document.created_at,
+                        "summary": extractive_summary(chunk_text),
                     },
                 )
             )

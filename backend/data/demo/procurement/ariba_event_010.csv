@@ -1,0 +1,4 @@
+event_id,vendor_id,vendor_name,bid_timestamp,event_close,unit_price,total_bid,weighted_score,status,proposal_author,proposal_created_at
+EVT-010-ARIBA,VND-ORION,Orion Cloud Systems,2026-01-10T14:00:00Z,2026-01-10T17:00:00Z,128.05,225583,95,awarded,orion.bid@cloudsys.com,2026-01-09T10:00:00Z
+EVT-010-ARIBA,VND-HARBOR,HarborPoint Services,2026-01-10T15:30:00Z,2026-01-10T17:00:00Z,125.00,218281,86,rejected,harbor.proc@services.com,2026-01-09T11:00:00Z
+EVT-010-ARIBA,VND-BLUEOAK,BlueOak Industrial,2026-01-10T18:30:00Z,2026-01-10T17:00:00Z,130.00,230000,82,late_accepted,blueoak@industrial.com,2026-01-09T10:00:00Z
