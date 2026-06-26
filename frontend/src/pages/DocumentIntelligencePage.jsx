@@ -270,7 +270,6 @@ function ParserUploadPanel({ parser, onClose }) {
     } finally {
       setLoading(false);
     }
-    }
   };
 
   // Build accept string from parser.accepts if available
@@ -409,6 +408,7 @@ function ParserUploadPanel({ parser, onClose }) {
     </div>
   );
 }
+
 
 // ── Parser card (clickable) ────────────────────────────────────────────────
 function ParserCard({ parser, isSelected, onSelect }) {
