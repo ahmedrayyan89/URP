@@ -21,6 +21,14 @@ import CaseDetailPage from "./pages/CaseDetailPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import { isAuthenticated } from "./lib/auth";
 
+// CMI Integrated Pages
+import VendorListPage from "./cmi/pages/VendorListPage";
+import VendorProfilePage from "./cmi/pages/VendorProfilePage";
+import ContractListPage from "./cmi/pages/ContractListPage";
+import ContractDetailPage from "./cmi/pages/ContractDetailPage";
+import ProductListPage from "./cmi/pages/ProductListPage";
+import ProductDetailPage from "./cmi/pages/ProductDetailPage";
+
 function LoginRedirect({ children }) {
   if (isAuthenticated()) {
     return <Navigate to="/projects" replace />;
@@ -70,6 +78,14 @@ export default function App() {
         <Route path="entities/definitions/new" element={<CreateEntityDefinitionPage />} />
         <Route path="entities/definitions/:defId" element={<EntityDefinitionDetailPage />} />
         <Route path="entities/instances/:instanceId" element={<EntityInstanceDetailPage />} />
+        
+        {/* CMI Integrated Entities routes */}
+        <Route path="entities/vendors" element={<VendorListPage />} />
+        <Route path="entities/vendors/:id" element={<VendorProfilePage />} />
+        <Route path="entities/contracts" element={<ContractListPage />} />
+        <Route path="entities/contracts/:id" element={<ContractDetailPage />} />
+        <Route path="entities/products" element={<ProductListPage />} />
+        <Route path="entities/products/:id" element={<ProductDetailPage />} />
         <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />
         <Route path="knowledge/:kbId" element={<KnowledgeBaseDetailPage />} />
         <Route path="document-intelligence" element={<DocumentIntelligencePage />} />
