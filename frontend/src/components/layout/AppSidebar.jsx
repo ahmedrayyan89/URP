@@ -50,18 +50,46 @@ export default function AppSidebar() {
       )}
 
       <nav className="app-sidebar-nav">
-        {NAV.map(({ segment, label, icon: Icon }) => (
-          <NavLink
-            key={segment}
-            to={`${base}/${segment}`}
-            className={({ isActive }) =>
-              `sidebar-nav-item${isActive ? " active" : ""}`
-            }
-          >
-            <Icon size={18} />
-            {label}
-          </NavLink>
-        ))}
+        {NAV.map(({ segment, label, icon: Icon }) => {
+          if (segment === "entities") {
+            return (
+              <div key={segment} className="sidebar-nav-group">
+                <NavLink
+                  to={`${base}/${segment}`}
+                  className={({ isActive }) =>
+                    `sidebar-nav-item${isActive ? " active" : ""}`
+                  }
+                >
+                  <Icon size={18} />
+                  {label}
+                </NavLink>
+                <div className="sidebar-submenu">
+                  <NavLink to={`${base}/entities/vendors`} className="sidebar-submenu-item">
+                    Vendors
+                  </NavLink>
+                  <NavLink to={`${base}/entities/contracts`} className="sidebar-submenu-item">
+                    Contracts
+                  </NavLink>
+                  <NavLink to={`${base}/entities/products`} className="sidebar-submenu-item">
+                    Products
+                  </NavLink>
+                </div>
+              </div>
+            );
+          }
+          return (
+            <NavLink
+              key={segment}
+              to={`${base}/${segment}`}
+              className={({ isActive }) =>
+                `sidebar-nav-item${isActive ? " active" : ""}`
+              }
+            >
+              <Icon size={18} />
+              {label}
+            </NavLink>
+          );
+        })}
       </nav>
     </aside>
   );

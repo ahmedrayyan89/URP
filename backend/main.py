@@ -29,6 +29,11 @@ from routers.tools_router import router as tools_router
 from routers.structured_router import router as structured_router
 from routers.document_intelligence import router as di_router
 
+# ── CMI (Cost Model Intelligence) integration routers ─────────────
+from cmi.routers.vendors import router as cmi_vendors_router
+from cmi.routers.contracts import router as cmi_contracts_router
+from cmi.routers.products import router as cmi_products_router
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -148,6 +153,11 @@ app.include_router(tools_router)
 app.include_router(procurement_router)
 app.include_router(document_intelligence_router)
 app.include_router(di_router, prefix="/api/v1")
+
+# ── CMI routes — isolated under /api/cmi (does not touch URP routes)
+app.include_router(cmi_vendors_router, prefix="/api/cmi")
+app.include_router(cmi_contracts_router, prefix="/api/cmi")
+app.include_router(cmi_products_router, prefix="/api/cmi")
 
 
 @app.get("/api/health")

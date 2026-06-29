@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import AgentCard from "../components/agents/AgentCard";
 import ImportAgentDropdown from "../components/agents/ImportAgentDropdown";
 import ImportAgentModal from "../components/agents/ImportAgentModal";
-import { IconPlus, IconSearch } from "../components/layout/Icons";
+import { IconBot, IconPlus, IconSearch } from "../components/layout/Icons";
 
 export default function AgentsPage() {
   const { projectId } = useParams();
@@ -109,6 +109,36 @@ export default function AgentsPage() {
         </div>
       ) : (
         <div className="agent-card-grid">
+          {/* Contract Agent integrated from CMI */}
+          <div
+            className="agent-card"
+            onClick={() => navigate(`/projects/${projectId}/entities/contracts`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && navigate(`/projects/${projectId}/entities/contracts`)}
+            style={{ border: "1px solid var(--primary-2)", background: "var(--hero-bg)" }}
+          >
+            <div className="agent-card-header">
+              <div
+                className="agent-pill-icon"
+                style={{ background: "var(--primary-light)", color: "var(--primary-2)" }}
+              >
+                <IconBot size={18} />
+              </div>
+              <span className="agent-card-name">Contract Agent</span>
+              <span className="agent-status-badge agent-status-active">
+                ACTIVE
+              </span>
+            </div>
+            <p className="agent-card-desc">
+              AI agent for supplier contract document ingestion, OCR text processing, clause mapping, and structured database extraction.
+            </p>
+            <div className="agent-card-footer">
+              <IconBot size={12} />
+              <span>LANGGRAPH · INTEGRATED</span>
+            </div>
+          </div>
+
           {filtered.map((agent) => (
             <AgentCard
               key={agent.id}
