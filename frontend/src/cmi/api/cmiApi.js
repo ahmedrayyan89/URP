@@ -59,8 +59,42 @@ export async function fetchContractById(id) {
   return cmiCall(`/contracts/${id}`);
 }
 
+export async function createContract(body) {
+  return cmiCall("/contracts", { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function updateContract(id, body) {
+  return cmiCall(`/contracts/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+}
+
+export async function archiveContract(id) {
+  return cmiCall(`/contracts/${id}/archive`, { method: "PATCH" });
+}
+
+export async function bulkArchiveContracts(contractIds) {
+  return cmiCall("/contracts/bulk-archive", {
+    method: "POST",
+    body: JSON.stringify({ contract_ids: contractIds }),
+  });
+}
+
 export async function fetchContractAgentStatus(contractId) {
   return cmiCall(`/contracts/${contractId}/agent/status`);
+}
+
+export async function fetchContractTerms(contractId) {
+  return cmiCall(`/contracts/${contractId}/terms`);
+}
+
+export async function updateContractTerm(contractId, termId, status) {
+  return cmiCall(`/contracts/${contractId}/terms/${termId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function fetchContractDocuments(contractId) {
+  return cmiCall(`/contracts/${contractId}/documents`);
 }
 
 // ── Products ──────────────────────────────────────────────────────
@@ -74,4 +108,20 @@ export async function fetchProducts({ page = 1, pageSize = 20, status, category,
 
 export async function fetchProductById(id) {
   return cmiCall(`/products/${id}`);
+}
+
+export async function createProduct(body) {
+  return cmiCall("/products", { method: "POST", body: JSON.stringify(body) });
+}
+
+export async function updateProduct(id, body) {
+  return cmiCall(`/products/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+}
+
+export async function fetchProductVendors(productId) {
+  return cmiCall(`/products/${productId}/vendors`);
+}
+
+export async function fetchProductBOM(productId) {
+  return cmiCall(`/products/${productId}/bom`);
 }

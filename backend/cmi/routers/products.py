@@ -1,13 +1,22 @@
 """CMI Products API — mounted at /api/cmi/products in URP."""
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
+from datetime import datetime, timezone
 
 from cmi.database import get_cmi_db
-from cmi.models.product import CMIProduct
-from cmi.schemas.product import ProductResponse, ProductListItem, PaginatedProducts
+from cmi.models.product import CMIProduct, CMIProductVendor, CMIBOMItem
+from cmi.schemas.product import (
+    ProductResponse,
+    ProductListItem,
+    PaginatedProducts,
+    ProductCreate,
+    ProductUpdate,
+    ProductVendorResponse,
+    BOMItemResponse
+)
 
 router = APIRouter(prefix="/products", tags=["CMI Products"])
 
@@ -46,6 +55,28 @@ async def list_products(
     )
 
 
+@router.post("", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
+async def create_product(product_in: ProductCreate, db: AsyncSession = Depends(get_cmi_db)):
+    """Create a new product."""
+    # Check if sku already exists
+    existing = (await db.execute(select(CMIProduct).where(CMIProduct.sku == product_in.sku))).scalar_one_or_none()
+    if existing:
+        raise HTTPException(status_code=400, detail="Product with this SKU already exists")
+
+    product = CMIProduct(
+        sku=product_in.sku,
+        name=product_in.name,
+        category=product_in.category,
+        mapping_type=product_in.mapping_type,
+        status=product_in.status,
+        target_cost=product_in.target_cost,
+    )
+    db.add(product)
+    await db.commit()
+    await db.refresh(product)
+    return ProductResponse.model_validate(product)
+
+
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
     """Get product by ID."""
@@ -54,3 +85,50 @@ async def get_product(product_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
     if not product:
         raise HTTPException(status_code=404, detail=f"Product {product_id} not found")
     return ProductResponse.model_validate(product)
+
+
+@router.patch("/{product_id}", response_model=ProductResponse)
+async def update_product(
+    product_id: UUID, product_in: ProductUpdate, db: AsyncSession = Depends(get_cmi_db)
+):
+    """Update product details."""
+    result = await db.execute(select(CMIProduct).where(CMIProduct.id == product_id))
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail=f"Product {product_id} not found")
+
+    update_data = product_in.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        if key == "unit_cost" and value is not None:
+            # Reconstruct jsonb
+            current = product.unit_cost or {}
+            period = datetime.now(timezone.utc).strftime("%Y-%m")
+            current[period] = value
+            setattr(product, key, current)
+        else:
+            setattr(product, key, value)
+    
+    product.last_updated = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(product)
+    return ProductResponse.model_validate(product)
+
+
+@router.get("/{product_id}/vendors", response_model=List[ProductVendorResponse])
+async def list_product_vendors(product_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
+    """List vendors for a product."""
+    result = await db.execute(
+        select(CMIProductVendor).where(CMIProductVendor.product_id == product_id)
+        .order_by(CMIProductVendor.is_primary.desc(), CMIProductVendor.created_at.desc())
+    )
+    return [ProductVendorResponse.model_validate(pv) for pv in result.scalars().all()]
+
+
+@router.get("/{product_id}/bom", response_model=List[BOMItemResponse])
+async def list_product_bom(product_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
+    """List Bill of Materials (BOM) items / ingredients for a product."""
+    result = await db.execute(
+        select(CMIBOMItem).where(CMIBOMItem.product_id == product_id)
+        .order_by(CMIBOMItem.created_at)
+    )
+    return [BOMItemResponse.model_validate(b) for b in result.scalars().all()]

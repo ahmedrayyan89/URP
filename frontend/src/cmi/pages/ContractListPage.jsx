@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchContracts } from "../api/cmiApi";
+import { fetchContracts, bulkArchiveContracts } from "../api/cmiApi";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const IconPlus = () => (
@@ -74,6 +74,14 @@ const IconFileDoc = () => (
   </svg>
 );
 
+const IconArchive = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="21 8 21 21 3 21 3 8" />
+    <rect x="1" y="3" width="22" height="5" />
+    <line x1="10" y1="12" x2="14" y2="12" />
+  </svg>
+);
+
 const STATUS_COLORS = {
   Active: "badge-green",
   Expired: "badge-grey",
@@ -84,7 +92,6 @@ const STATUS_COLORS = {
   Superseded: "badge-grey",
 };
 
-// ── Pipeline helpers ────────────────────────────────────────────────────────
 function agentPipelinePhaseToShortLabel(phase) {
   switch ((phase || "").toLowerCase()) {
     case "queued": return "Queued";
@@ -115,6 +122,8 @@ export default function ContractListPage() {
   // Modals / Confirmations
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [bulkArchiving, setBulkArchiving] = useState(false);
 
   const refreshList = useCallback(() => {
     setLoading(true);
@@ -122,6 +131,7 @@ export default function ContractListPage() {
     fetchContracts({ archived: archiveScope === "archived" })
       .then((res) => {
         setContracts(res.items || []);
+        setSelectedIds(new Set()); // clear selection on refresh
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -131,7 +141,6 @@ export default function ContractListPage() {
     refreshList();
   }, [refreshList]);
 
-  // Client-side filtering to match CMI behaviour
   const filtered = contracts.filter((c) => {
     const s =
       c.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -170,13 +179,51 @@ export default function ContractListPage() {
     document.body.removeChild(link);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!confirmDelete) return;
-    // Local deletion mock since backend has no delete endpoint
-    setContracts(prev => prev.filter(c => c.id !== confirmDelete.id));
-    setSuccessMsg(`Contract "${confirmDelete.title}" successfully archived.`);
-    setConfirmDelete(null);
-    setTimeout(() => setSuccessMsg(null), 4000);
+    try {
+      await bulkArchiveContracts([confirmDelete.id]);
+      setContracts(prev => prev.filter(c => c.id !== confirmDelete.id));
+      setSuccessMsg(`Contract "${confirmDelete.title}" successfully archived.`);
+    } catch (err) {
+      setError(err.message || "Failed to archive contract.");
+    } finally {
+      setConfirmDelete(null);
+      setTimeout(() => setSuccessMsg(null), 4000);
+    }
+  };
+
+  const toggleSelection = (id) => {
+    const newSel = new Set(selectedIds);
+    if (newSel.has(id)) newSel.delete(id);
+    else newSel.add(id);
+    setSelectedIds(newSel);
+  };
+
+  const toggleAll = () => {
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map(c => c.id)));
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`Are you sure you want to archive ${selectedIds.size} contracts?`)) return;
+    
+    setBulkArchiving(true);
+    try {
+      await bulkArchiveContracts(Array.from(selectedIds));
+      setContracts(prev => prev.filter(c => !selectedIds.has(c.id)));
+      setSuccessMsg(`Successfully archived ${selectedIds.size} contracts.`);
+      setSelectedIds(new Set());
+      setTimeout(() => setSuccessMsg(null), 4000);
+    } catch (err) {
+      setError(err.message || "Failed to bulk archive.");
+    } finally {
+      setBulkArchiving(false);
+    }
   };
 
   return (
@@ -203,7 +250,7 @@ export default function ContractListPage() {
             <IconDownload /> Export
           </button>
           <button
-            onClick={() => navigate(`/projects/${projectId}/document-intelligence`)}
+            onClick={() => navigate(`/projects/${projectId}/entities/contracts/upload`)}
             className="btn btn-primary"
             style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#2563eb", color: "white", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "pointer" }}
           >
@@ -215,6 +262,22 @@ export default function ContractListPage() {
       {/* Alert notifications */}
       {error && <div className="alert alert-error mb-2">{error}</div>}
       {successMsg && <div className="alert alert-success mb-2" style={{ background: "#ecfdf5", border: "1px solid #10b981", color: "#047857", padding: "12px 16px", borderRadius: 8, fontSize: 14 }}>{successMsg}</div>}
+
+      {/* Bulk Action Toolbar */}
+      {selectedIds.size > 0 && archiveScope === "unarchived" && (
+        <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "12px 16px", borderRadius: 8, marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 14, color: "#1e3a8a", fontWeight: 500 }}>{selectedIds.size} contracts selected</span>
+          <button 
+            className="btn btn-sm" 
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "white", border: "1px solid #bfdbfe", color: "#1e40af" }}
+            onClick={handleBulkArchive}
+            disabled={bulkArchiving}
+          >
+            {bulkArchiving ? <span className="spinner" style={{ width: 12, height: 12 }} /> : <IconArchive />}
+            Archive Selected
+          </button>
+        </div>
+      )}
 
       {/* ── Search & Filter Controls ── */}
       <div style={{ background: "white", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -266,7 +329,7 @@ export default function ContractListPage() {
           <select
             className="input"
             value={archiveScope}
-            onChange={(e) => setArchiveScope(e.target.value)}
+            onChange={(e) => { setArchiveScope(e.target.value); setSelectedIds(new Set()); }}
             style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid var(--border)", background: "white", fontSize: 13.5, minWidth: 120, outline: "none", height: "auto" }}
           >
             <option value="unarchived">Unarchived</option>
@@ -309,11 +372,19 @@ export default function ContractListPage() {
             <table className="data-table" style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "#fcfcfc", borderBottom: "1px solid var(--border)" }}>
-                  <th style={{ width: "40%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Contract</th>
+                  <th style={{ width: "5%", padding: "12px 16px", textAlign: "center" }}>
+                    <input 
+                      type="checkbox" 
+                      checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                      onChange={toggleAll}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </th>
+                  <th style={{ width: "35%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Contract</th>
                   <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Type</th>
                   <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Status</th>
                   <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Agent Status</th>
-                  <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Expires</th>
+                  <th style={{ width: "10%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Expires</th>
                   <th style={{ width: "5%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "right", letterSpacing: "0.05em" }}>Actions</th>
                 </tr>
               </thead>
@@ -321,16 +392,24 @@ export default function ContractListPage() {
                 {filtered.map((c) => (
                   <tr
                     key={c.id}
-                    className="clickable-row"
-                    style={{ borderBottom: "1px solid var(--border)", transition: "background 0.15s" }}
+                    className={`clickable-row ${selectedIds.has(c.id) ? "selected" : ""}`}
+                    style={{ borderBottom: "1px solid var(--border)", transition: "background 0.15s", background: selectedIds.has(c.id) ? "#eff6ff" : "white" }}
                   >
+                    <td style={{ padding: "12px 16px", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedIds.has(c.id)}
+                        onChange={() => toggleSelection(c.id)}
+                        style={{ cursor: "pointer" }}
+                      />
+                    </td>
                     {/* Contract Details */}
                     <td 
                       style={{ padding: "12px 16px", cursor: "pointer" }}
                       onClick={() => navigate(`/projects/${projectId}/entities/contracts/${c.id}`)}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: 6, bg: "var(--bg)", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", shrink: 0, flexShrink: 0 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 6, background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <IconFileDoc />
                         </div>
                         <div>
@@ -389,17 +468,19 @@ export default function ContractListPage() {
                         >
                           <IconEye />
                         </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConfirmDelete(c);
-                          }}
-                          className="btn btn-ghost btn-sm"
-                          style={{ padding: "6px 8px", borderRadius: 4, cursor: "pointer", display: "inline-flex", alignItems: "center", color: "var(--red)" }}
-                          title="Delete"
-                        >
-                          <IconTrash />
-                        </button>
+                        {archiveScope === "unarchived" && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmDelete(c);
+                            }}
+                            className="btn btn-ghost btn-sm"
+                            style={{ padding: "6px 8px", borderRadius: 4, cursor: "pointer", display: "inline-flex", alignItems: "center", color: "var(--red)" }}
+                            title="Archive"
+                          >
+                            <IconArchive />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

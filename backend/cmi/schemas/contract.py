@@ -60,3 +60,72 @@ class PaginatedContracts(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+
+# ── New schemas for missing CMI screens ──────────────────────────
+
+
+class ContractCreate(BaseModel):
+    """Schema for creating a new contract."""
+    title: str = Field(..., min_length=1, max_length=500)
+    vendor_id: UUID
+    vendor_name: Optional[str] = None
+    type: str = Field(default="Master Agreement")
+    status: str = Field(default="Pending Review")
+    start_date: date
+    end_date: date
+    total_value: Optional[float] = None
+
+
+class ContractUpdate(BaseModel):
+    """Schema for updating an existing contract."""
+    title: Optional[str] = Field(default=None, max_length=500)
+    vendor_id: Optional[UUID] = None
+    vendor_name: Optional[str] = None
+    type: Optional[str] = None
+    status: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    total_value: Optional[float] = None
+
+
+class ContractTermResponse(BaseModel):
+    """Schema for an extracted contract term / clause."""
+    id: UUID
+    contract_id: UUID
+    clause: str
+    category: str
+    extracted_value: str
+    confidence: int
+    page_ref: Optional[str] = None
+    status: str = "Needs Review"
+    created_at: datetime
+    verified_by: Optional[UUID] = None
+    verified_at: Optional[datetime] = None
+
+    model_config = {"from_attributes": True}
+
+
+class ContractTermUpdate(BaseModel):
+    """Schema for updating a contract term status."""
+    status: str = Field(..., pattern="^(Verified|Needs Review|Disputed)$")
+
+
+class ContractDocumentResponse(BaseModel):
+    """Schema for a contract document."""
+    id: UUID
+    contract_id: UUID
+    file_name: str
+    file_path: str
+    mime_type: str
+    file_size: int
+    version: str = "v1.0"
+    uploaded_at: datetime
+    uploaded_by: Optional[UUID] = None
+
+    model_config = {"from_attributes": True}
+
+
+class BulkArchiveRequest(BaseModel):
+    """Schema for bulk-archiving contracts."""
+    contract_ids: List[UUID] = Field(..., min_length=1)
