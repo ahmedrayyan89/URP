@@ -28,6 +28,7 @@ import ContractListPage from "./cmi/pages/ContractListPage";
 import ContractDetailPage from "./cmi/pages/ContractDetailPage";
 import ProductListPage from "./cmi/pages/ProductListPage";
 import ProductDetailPage from "./cmi/pages/ProductDetailPage";
+import UploadContractPage from "./cmi/pages/UploadContractPage";
 
 function LoginRedirect({ children }) {
   if (isAuthenticated()) {
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="entities/vendors" element={<VendorListPage />} />
         <Route path="entities/vendors/:id" element={<VendorProfilePage />} />
         <Route path="entities/contracts" element={<ContractListPage />} />
+        <Route path="entities/contracts/upload" element={<UploadContractPage />} />
         <Route path="entities/contracts/:id" element={<ContractDetailPage />} />
         <Route path="entities/products" element={<ProductListPage />} />
         <Route path="entities/products/:id" element={<ProductDetailPage />} />

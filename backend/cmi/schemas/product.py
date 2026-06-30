@@ -31,7 +31,6 @@ class ProductResponse(BaseModel):
         if isinstance(v, dict):
             if not v:
                 return None
-            # Try to get latest by period key; fallback to max value
             try:
                 vals = [float(x) for x in v.values() if x is not None]
                 return max(vals) if vals else None
@@ -67,3 +66,48 @@ class PaginatedProducts(BaseModel):
     page: int
     page_size: int
     total_pages: int
+
+
+class ProductCreate(BaseModel):
+    sku: str
+    name: str
+    category: str
+    mapping_type: str = "INDEPENDENT"
+    status: str = "Active"
+    target_cost: Optional[float] = None
+
+
+class ProductUpdate(BaseModel):
+    sku: Optional[str] = None
+    name: Optional[str] = None
+    category: Optional[str] = None
+    mapping_type: Optional[str] = None
+    status: Optional[str] = None
+    target_cost: Optional[float] = None
+    unit_cost: Optional[float] = None
+    primary_vendor_id: Optional[UUID] = None
+    primary_vendor_name: Optional[str] = None
+
+
+class ProductVendorResponse(BaseModel):
+    id: UUID
+    product_id: UUID
+    vendor_id: UUID
+    vendor_name: Optional[str] = None
+    is_primary: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class BOMItemResponse(BaseModel):
+    id: UUID
+    product_id: UUID
+    name: str
+    quantity: float
+    unit_of_measure: str
+    unit_cost: Optional[float] = None
+    total_cost: Optional[float] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

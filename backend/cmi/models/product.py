@@ -34,6 +34,7 @@ class CMIProduct(Base):
 
     # Relationships
     product_vendors = relationship("CMIProductVendor", back_populates="product", cascade="all, delete-orphan")
+    bom_items = relationship("CMIBOMItem", back_populates="product", cascade="all, delete-orphan")
 
 
 class CMIProductVendor(Base):
@@ -53,7 +54,22 @@ class CMIProductVendor(Base):
     vendor = relationship("Vendor", back_populates="product_vendors")
 
 
+class CMIBOMItem(Base):
+    __tablename__ = "bom_items"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    product_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    quantity: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
+    unit_of_measure: Mapped[str] = mapped_column(String(50))
+    unit_cost: Mapped[float | None] = mapped_column(Numeric(10, 4))
+    total_cost: Mapped[float | None] = mapped_column(Numeric(10, 4))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    product = relationship("CMIProduct", back_populates="bom_items")
+
+
 # Aliases
 Product = CMIProduct
 ProductVendor = CMIProductVendor
-BOMItem = None  # not needed for list/detail views
+BOMItem = CMIBOMItem
