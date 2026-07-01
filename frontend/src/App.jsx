@@ -24,6 +24,7 @@ import { isAuthenticated } from "./lib/auth";
 // CMI Integrated Pages
 import VendorListPage from "./cmi/pages/VendorListPage";
 import VendorProfilePage from "./cmi/pages/VendorProfilePage";
+import VendorFormPage from "./cmi/pages/VendorFormPage";
 import ContractListPage from "./cmi/pages/ContractListPage";
 import ContractDetailPage from "./cmi/pages/ContractDetailPage";
 import ContractPDFPage from "./cmi/pages/ContractPDFPage";
@@ -84,7 +85,9 @@ export default function App() {
         
         {/* CMI Integrated Entities routes */}
         <Route path="entities/vendors" element={<VendorListPage />} />
+        <Route path="entities/vendors/new" element={<VendorFormPage />} />
         <Route path="entities/vendors/:id" element={<VendorProfilePage />} />
+        <Route path="entities/vendors/:id/edit" element={<VendorFormPage />} />
         <Route path="entities/contracts" element={<ContractListPage />} />
         <Route path="entities/contracts/upload" element={<UploadContractPage />} />
         <Route path="entities/contracts/:id" element={<ContractDetailPage />} />

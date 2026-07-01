@@ -46,6 +46,30 @@ export async function updateVendor(id, body) {
   return cmiCall(`/vendors/${id}`, { method: "PATCH", body: JSON.stringify(body) });
 }
 
+export async function deleteVendor(id) {
+  return cmiCall(`/vendors/${id}`, { method: "DELETE" });
+}
+
+export async function fetchVendorCostModels(id) {
+  // URP backend mirrors the CMI cost-models sub-route (returns empty list if none)
+  return cmiCall(`/vendors/${id}/cost-models`).catch(() => []);
+}
+
+export function sumVendorSpendByPeriod(totalSpend) {
+  if (!totalSpend || typeof totalSpend !== "object") return 0;
+  return Object.values(totalSpend).reduce((a, b) => a + (Number(b) || 0), 0);
+}
+
+export function formatCurrency(amount) {
+  if (!amount && amount !== 0) return "—";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+}
+
+export function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 // ── Contracts ─────────────────────────────────────────────────────
 export async function fetchContracts({ page = 1, pageSize = 20, archived = false, status, vendorId, search } = {}) {
   const p = new URLSearchParams({ page, page_size: pageSize, archived });
