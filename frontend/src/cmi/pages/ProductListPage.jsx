@@ -61,6 +61,12 @@ const IconList = () => (
   </svg>
 );
 
+const IconFilter = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+);
+
 const STATUS_COLORS = {
   Active: "badge-green",
   Discontinued: "badge-grey",
@@ -76,7 +82,12 @@ export default function ProductListPage() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list");
+  const [sortField, setSortField] = useState("name");
+  const [sortAsc, setSortAsc] = useState(true);
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [successMsg, setSuccessMsg] = useState(null);
@@ -94,30 +105,79 @@ export default function ProductListPage() {
     refreshList();
   }, [refreshList]);
 
-  const filtered = products.filter((p) => {
-    const s =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase()) ||
-      (p.primary_vendor_name || "").toLowerCase().includes(search.toLowerCase());
-    
-    let st = true;
-    if (statusFilter) {
-      st = (p.status || "").trim().toLowerCase() === statusFilter.toLowerCase();
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortField(field);
+      setSortAsc(true);
     }
-    
-    return s && st;
-  });
+  };
+
+  const filtered = products
+    .filter((p) => {
+      const s =
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.sku.toLowerCase().includes(search.toLowerCase()) ||
+        (p.primary_vendor_name || "").toLowerCase().includes(search.toLowerCase());
+      
+      let st = true;
+      if (statusFilter) {
+        st = (p.status || "").trim().toLowerCase() === statusFilter.toLowerCase();
+      }
+
+      let cat = true;
+      if (categoryFilter) {
+        cat = (p.category || "").trim().toLowerCase() === categoryFilter.toLowerCase();
+      }
+      
+      return s && st && cat;
+    })
+    .sort((a, b) => {
+      let valA, valB;
+      if (sortField === "name") {
+        valA = a.name || "";
+        valB = b.name || "";
+      } else if (sortField === "category") {
+        valA = a.category || "";
+        valB = b.category || "";
+      } else if (sortField === "vendor") {
+        valA = a.primary_vendor_name || "";
+        valB = b.primary_vendor_name || "";
+      } else if (sortField === "status") {
+        valA = a.status || "";
+        valB = b.status || "";
+      } else if (sortField === "unit_cost") {
+        valA = a.unit_cost != null ? a.unit_cost : -Infinity;
+        valB = b.unit_cost != null ? b.unit_cost : -Infinity;
+      } else if (sortField === "margin") {
+        valA = a.margin != null ? a.margin : -Infinity;
+        valB = b.margin != null ? b.margin : -Infinity;
+      } else if (sortField === "ingredient_count") {
+        valA = a.ingredient_count != null ? a.ingredient_count : 0;
+        valB = b.ingredient_count != null ? b.ingredient_count : 0;
+      } else {
+        valA = a[sortField] || "";
+        valB = b[sortField] || "";
+      }
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      return sortAsc ? valA - valB : valB - valA;
+    });
 
   const handleExportCSV = () => {
     if (!filtered.length) return;
-    const headers = ["SKU", "Product Name", "Category", "Status", "Primary Vendor", "Unit Cost"].join(",");
+    const headers = ["Product Name", "Category", "Vendor", "Status", "Unit Cost", "Margin", "Raw Materials"].join(",");
     const rows = filtered.map(p => [
-      `"${p.sku}"`,
       `"${p.name.replace(/"/g, '""')}"`,
       `"${p.category}"`,
+      `"${p.primary_vendor_name || ""}"`,
       `"${p.status}"`,
-      `"${(p.primary_vendor_name || "").replace(/"/g, '""')}"`,
-      `"${p.unit_cost || ""}"`
+      `"${p.unit_cost != null ? p.unit_cost : ""}"`,
+      `"${p.margin != null ? p.margin : ""}"`,
+      `"${p.ingredient_count != null ? p.ingredient_count : 0}"`
     ].join(","));
     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
     const encodedUri = encodeURI(csvContent);
@@ -136,19 +196,53 @@ export default function ProductListPage() {
     setTimeout(() => setSuccessMsg(null), 4000);
   };
 
+  const renderSortableHeader = (label, field, width) => {
+    const isSorted = sortField === field;
+    return (
+      <th
+        onClick={() => handleSort(field)}
+        style={{
+          width,
+          textTransform: "uppercase",
+          fontSize: 11,
+          fontWeight: 600,
+          color: isSorted ? "var(--text)" : "var(--text-3)",
+          padding: "12px 16px",
+          textAlign: "left",
+          letterSpacing: "0.05em",
+          cursor: "pointer",
+          userSelect: "none"
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {label}
+          {isSorted ? (
+            <span style={{ fontSize: 10, color: "#2563eb" }}>{sortAsc ? "▲" : "▼"}</span>
+          ) : (
+            <span style={{ fontSize: 10, color: "var(--border)", opacity: 0.5 }}>▲</span>
+          )}
+        </div>
+      </th>
+    );
+  };
+
   return (
     <div className="shell-page">
       {/* ── Header Row ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--text-3)", marginBottom: 8 }}>
-            <span>Entities</span>
-            <span style={{ color: "var(--border)" }}>/</span>
-            <span style={{ color: "var(--text-2)", fontWeight: 500 }}>Products</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <h1 className="shell-page-title" style={{ margin: 0 }}>Products</h1>
-            <span className="badge badge-blue" style={{ textTransform: "none", borderRadius: 4, padding: "2px 8px", fontSize: 11 }}>Components</span>
+          <div style={{
+            background: "#eff6ff",
+            border: "1px solid #bfdbfe",
+            color: "#2563eb",
+            padding: "6px 16px",
+            borderRadius: 6,
+            fontWeight: 600,
+            fontSize: 13,
+            display: "inline-flex",
+            alignItems: "center"
+          }}>
+            Products
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -160,11 +254,11 @@ export default function ProductListPage() {
             <IconDownload /> Export
           </button>
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => navigate(`/projects/${projectId}/entities/products/new`)}
             className="btn btn-primary"
             style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#2563eb", color: "white", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "pointer" }}
           >
-            <IconPlus /> Create Product
+            <IconPlus /> Add Product
           </button>
         </div>
       </div>
@@ -173,55 +267,156 @@ export default function ProductListPage() {
       {successMsg && <div className="alert alert-success mb-2" style={{ background: "#ecfdf5", border: "1px solid #10b981", color: "#047857", padding: "12px 16px", borderRadius: 8, fontSize: 14 }}>{successMsg}</div>}
 
       {/* ── Search & Filter Controls ── */}
-      <div style={{ background: "white", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <div style={{ fontSize: 13.5, color: "var(--text-3)", fontWeight: 500 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div style={{ fontSize: 13, color: "var(--text-3)", fontWeight: 500 }}>
           Showing {filtered.length} of {products.length} products
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Search container */}
-          <div style={{ position: "relative" }}>
-            <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", display: "flex" }}>
-              <IconSearch />
-            </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, position: "relative" }}>
+          {/* Expanded Search Input */}
+          {isSearchOpen && (
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ padding: "8px 12px 8px 32px", borderRadius: 6, border: "1px solid var(--border)", fontSize: 13.5, width: 220, outline: "none" }}
+              style={{
+                padding: "8px 12px",
+                borderRadius: 6,
+                border: "1px solid var(--border)",
+                fontSize: 13,
+                width: 200,
+                outline: "none",
+                background: "white"
+              }}
+              autoFocus
             />
-          </div>
+          )}
 
-          {/* Filters */}
-          <select
-            className="input"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: "8px 12px", borderRadius: 6, border: "1px solid var(--border)", background: "white", fontSize: 13.5, minWidth: 120, outline: "none", height: "auto" }}
+          {/* Search Button */}
+          <button
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            style={{
+              background: isSearchOpen ? "#eff6ff" : "white",
+              border: isSearchOpen ? "1px solid #bfdbfe" : "1px solid var(--border)",
+              color: isSearchOpen ? "#2563eb" : "var(--text-2)",
+              borderRadius: 6,
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              outline: "none"
+            }}
+            title="Search products"
           >
-            <option value="">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Draft">Draft</option>
-            <option value="Discontinued">Discontinued</option>
-          </select>
+            <IconSearch />
+          </button>
+
+          {/* Filter Button */}
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            style={{
+              background: isFilterOpen ? "#eff6ff" : "white",
+              border: isFilterOpen ? "1px solid #bfdbfe" : "1px solid var(--border)",
+              color: isFilterOpen ? "#2563eb" : "var(--text-2)",
+              borderRadius: 6,
+              padding: "8px 14px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: "pointer",
+              outline: "none",
+              height: 36
+            }}
+          >
+            <IconFilter /> Filter
+          </button>
+
+          {/* Filter Dropdown Menu */}
+          {isFilterOpen && (
+            <div style={{
+              position: "absolute",
+              top: 42,
+              right: 80,
+              background: "white",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+              padding: 12,
+              zIndex: 100,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              minWidth: 160
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-3)", textTransform: "uppercase" }}>Status</div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid var(--border)", fontSize: 13, background: "white", width: "100%", outline: "none" }}
+              >
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Draft">Draft</option>
+                <option value="Discontinued">Discontinued</option>
+              </select>
+              
+              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-3)", textTransform: "uppercase", marginTop: 4 }}>Category</div>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                style={{ padding: "6px 8px", borderRadius: 6, border: "1px solid var(--border)", fontSize: 13, background: "white", width: "100%", outline: "none" }}
+              >
+                <option value="">All Categories</option>
+                {Array.from(new Set(products.map(p => p.category).filter(Boolean))).map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* View Toggles */}
-          <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
-            <button
-              onClick={() => setViewMode("list")}
-              style={{ background: viewMode === "list" ? "#f3f4f6" : "white", border: "none", padding: "8px 10px", display: "flex", cursor: "pointer", outline: "none" }}
-              title="List View"
-            >
-              <IconList />
-            </button>
-            <button
-              onClick={() => setViewMode("card")}
-              style={{ background: viewMode === "card" ? "#f3f4f6" : "white", border: "none", padding: "8px 10px", display: "flex", cursor: "pointer", outline: "none" }}
-              title="Grid View"
-            >
-              <IconGrid />
-            </button>
-          </div>
+          <button
+            onClick={() => setViewMode("list")}
+            style={{
+              background: viewMode === "list" ? "#eff6ff" : "white",
+              border: viewMode === "list" ? "1px solid #bfdbfe" : "1px solid var(--border)",
+              color: viewMode === "list" ? "#2563eb" : "var(--text-3)",
+              borderRadius: 6,
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              outline: "none"
+            }}
+            title="List View"
+          >
+            <IconList />
+          </button>
+          <button
+            onClick={() => setViewMode("card")}
+            style={{
+              background: viewMode === "card" ? "#eff6ff" : "white",
+              border: viewMode === "card" ? "1px solid #bfdbfe" : "1px solid var(--border)",
+              color: viewMode === "card" ? "#2563eb" : "var(--text-3)",
+              borderRadius: 6,
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              outline: "none"
+            }}
+            title="Grid View"
+          >
+            <IconGrid />
+          </button>
         </div>
       </div>
 
@@ -241,12 +436,14 @@ export default function ProductListPage() {
             <table className="data-table" style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "#fcfcfc", borderBottom: "1px solid var(--border)" }}>
-                  <th style={{ width: "30%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Product</th>
-                  <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>SKU</th>
-                  <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Category</th>
-                  <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Status</th>
-                  <th style={{ width: "15%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "left", letterSpacing: "0.05em" }}>Unit Cost</th>
-                  <th style={{ width: "10%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "right", letterSpacing: "0.05em" }}>Actions</th>
+                  {renderSortableHeader("Product", "name", "22%")}
+                  {renderSortableHeader("Category", "category", "12%")}
+                  {renderSortableHeader("Vendor", "vendor", "15%")}
+                  {renderSortableHeader("Status", "status", "12%")}
+                  {renderSortableHeader("Unit Cost", "unit_cost", "12%")}
+                  {renderSortableHeader("Margin", "margin", "10%")}
+                  {renderSortableHeader("Raw Materials", "ingredient_count", "10%")}
+                  <th style={{ width: "7%", textTransform: "uppercase", fontSize: 11, fontWeight: 600, color: "var(--text-3)", padding: "12px 16px", textAlign: "right", letterSpacing: "0.05em" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -264,17 +461,22 @@ export default function ProductListPage() {
                         </div>
                         <div>
                           <div style={{ fontWeight: 600, color: "var(--text)", fontSize: 13.5 }}>{p.name}</div>
-                          <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>{p.primary_vendor_name || "No Primary Vendor"}</div>
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-2)" }}>{p.sku}</td>
                     <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-2)" }}>{p.category}</td>
+                    <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-2)" }}>{p.primary_vendor_name || "No Primary Vendor"}</td>
                     <td style={{ padding: "12px 16px" }}>
                       <span className={`badge ${STATUS_COLORS[p.status] || "badge-grey"}`}>{p.status}</span>
                     </td>
                     <td style={{ padding: "12px 16px", fontSize: 13.5, fontWeight: 500, color: "var(--text-2)" }}>
                       {p.unit_cost != null ? `$${Number(p.unit_cost).toFixed(2)}` : "—"}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontSize: 13.5, fontWeight: 500, color: "var(--text-2)" }}>
+                      {p.margin != null ? `${Number(p.margin).toFixed(1)}%` : "—"}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontSize: 13.5, fontWeight: 500, color: "var(--text-2)" }}>
+                      {p.ingredient_count != null ? p.ingredient_count : 0}
                     </td>
                     <td style={{ padding: "12px 16px", textAlign: "right" }}>
                       <button
