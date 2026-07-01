@@ -907,6 +907,13 @@ html, body, #root {
 .input::placeholder,
 .textarea::placeholder { color: var(--text-3); }
 
+.input-error {
+  border-color: var(--red) !important;
+}
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+
 .textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
 
 .form-row { margin-bottom: 18px; }
