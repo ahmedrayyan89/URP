@@ -1,343 +1,356 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { fetchContractById, fetchContractAgentStatus, updateContract, fetchContractTerms, fetchContractDocuments, updateContractTerm } from "../api/cmiApi";
+import { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchContractById, fetchContractTerms, fetchContractExtractedIngredients, resumeContractAgent } from "../api/cmiApi";
 import { agentPipelinePhaseToStepIndex, CONTRACT_AGENT_PIPELINE_STEPS } from "../utils/contractAgentPipeline";
 
-const STATUS_COLORS = {
-  Active: "badge-green", Expired: "badge-grey", "Pending Review": "badge-amber",
-  "AI Processing": "badge-blue", "On Hold": "badge-amber",
+// ── Inline Pipeline Progress ───────────────────────────────────────────────
+function ContractAgentPipelineProgress({ activeStepIndex, hint }) {
+  const safeIdx = Math.min(Math.max(activeStepIndex, 0), CONTRACT_AGENT_PIPELINE_STEPS.length - 1);
+  const label = CONTRACT_AGENT_PIPELINE_STEPS[safeIdx]?.label ?? "Working…";
+  const pct = Math.min(100, ((Math.min(activeStepIndex, 5) + 1) / 6) * 100);
+  return (
+    <div style={{ padding: 12, border: "1px solid #e2e8f0", background: "#f8fafc", borderRadius: 8, marginBottom: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span className="spinner" style={{ width: 16, height: 16, flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--text)" }}>
+            <span style={{ fontWeight: 500 }}>Contract Agent</span>
+            <span style={{ color: "var(--text-3)" }}> — {label}</span>
+          </p>
+          {hint && <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--text-3)" }}>{hint}</p>}
+        </div>
+      </div>
+      <div style={{ marginTop: 8, height: 4, background: "#e2e8f0", borderRadius: 4, overflow: "hidden" }}>
+        <div style={{ height: "100%", background: "#2563eb", width: `${pct}%`, transition: "width 0.3s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+// ── Icons ──────────────────────────────────────────────────────────────────
+const IconEye = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const IconCheckCircle = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </svg>
+);
+
+const IconAlertTriangle = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    <line x1="12" y1="9" x2="12" y2="13" />
+    <line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
+
+// ── Utils ──────────────────────────────────────────────────────────────────
+const STATUS_STYLES = {
+  Active:           { color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" },
+  "Pending Review": { color: "#d97706", bg: "#fffbeb", border: "#fde68a" },
+  "On Hold":        { color: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
+  "AI Processing":  { color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
+  Done:             { color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" },
+  "Needs Review":   { color: "#d97706", bg: "#fffbeb", border: "#fde68a" },
+  Verified:         { color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" },
+  Disputed:         { color: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
 };
 
+const StatusBadge = ({ status }) => {
+  const s = STATUS_STYLES[status] || { color: "#4b5563", bg: "#f3f4f6", border: "#e5e7eb" };
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 10px", borderRadius: 9999, fontSize: 11, fontWeight: 500, color: s.color, background: s.bg, border: `1px solid ${s.border}`, whiteSpace: "nowrap" }}>
+      {status}
+    </span>
+  );
+};
+
+function formatCurrency(v) { return v == null ? "—" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v); }
+function formatDate(d) { return d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "—"; }
+
+function isAgentHitlPaused(c) {
+  if (c.status !== "Pending Review") return false;
+  const h = c.contract_metadata?.agent_hitl;
+  return !!h && typeof h === "object";
+}
+
+// ── Component ──────────────────────────────────────────────────────────────
 export default function ContractDetailPage() {
   const { projectId, id } = useParams();
   const navigate = useNavigate();
-  const [contract, setContract] = useState(null);
-  const [agentStatus, setAgentStatus] = useState(null);
-  const [terms, setTerms] = useState([]);
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [tab, setTab] = useState("details");
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({});
+  const [contract, setContract]                           = useState(null);
+  const [terms, setTerms]                                 = useState([]);
+  const [extractedIngredients, setExtractedIngredients]   = useState([]);
+  const [extractedIngredientsLoading, setExtractedIngredientsLoading] = useState(true);
+  const [tab, setTab]                                     = useState("details");
+  const [resumingAgent, setResumingAgent]                 = useState(false);
 
+  // ── Initial load ──────────────────────────────────────────────────────────
   useEffect(() => {
-    setLoading(true);
-    fetchContractById(id)
-      .then((c) => {
-        setContract(c);
-        setEditForm({ title: c.title, status: c.status, type: c.type, total_value: c.total_value });
-        return Promise.all([
-          fetchContractAgentStatus(id).catch(() => null),
-          fetchContractTerms(id).catch(() => []),
-          fetchContractDocuments(id).catch(() => []),
-        ]);
-      })
-      .then(([status, t, d]) => {
-        setAgentStatus(status);
-        setTerms(t);
-        setDocuments(d);
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    if (!id) { setExtractedIngredientsLoading(false); return; }
+    setExtractedIngredientsLoading(true);
+    fetchContractById(id).then(setContract).catch(() => {});
+    fetchContractTerms(id).then(setTerms).catch(() => setTerms([]));
+    fetchContractExtractedIngredients(id)
+      .then(setExtractedIngredients)
+      .catch(() => setExtractedIngredients([]))
+      .finally(() => setExtractedIngredientsLoading(false));
   }, [id]);
 
-  const handleUpdate = async () => {
+  // ── Polling while AI Processing ───────────────────────────────────────────
+  useEffect(() => {
+    if (!id || contract?.status !== "AI Processing") return;
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const c = await fetchContractById(id);
+        if (!c || cancelled) return;
+        if (c.status !== "AI Processing") {
+          const [tms, ing] = await Promise.all([
+            fetchContractTerms(id).catch(() => []),
+            fetchContractExtractedIngredients(id).catch(() => []),
+          ]);
+          if (!cancelled) { setTerms(tms); setExtractedIngredients(ing); setExtractedIngredientsLoading(false); }
+        }
+        if (!cancelled) setContract(c);
+      } catch { /* ignore */ }
+    };
+    const iv = setInterval(() => void tick(), 2000);
+    return () => { cancelled = true; clearInterval(iv); };
+  }, [id, contract?.status]);
+
+  const materialsCount = useMemo(() => extractedIngredients?.length || 0, [extractedIngredients]);
+
+  if (!contract) return (
+    <div style={{ display: "flex", justifyContent: "center", padding: "48px 0" }}>
+      <span className="spinner" style={{ width: 24, height: 24 }} />
+    </div>
+  );
+
+  const isArchived    = contract.is_archived === true;
+  const hitlPaused    = !isArchived && isAgentHitlPaused(contract);
+  const hitlPayload   = contract.contract_metadata?.agent_hitl || {};
+  const llmPolicy     = contract.contract_metadata?.agent_llm_policy || {};
+  const ccWarnings    = contract.contract_metadata?.agent_cross_check_warnings;
+  const ccWarnList    = Array.isArray(ccWarnings) ? ccWarnings : [];
+  const productsCount = contract.product_count > 0 ? contract.product_count : (contract.vendor_product_count || 0);
+
+  const handleResumeAgent = async () => {
+    if (!id || !hitlPaused) return;
+    setResumingAgent(true);
     try {
-      const updated = await updateContract(id, editForm);
-      setContract(updated);
-      setIsEditing(false);
+      await resumeContractAgent(id, {});
     } catch (e) {
-      alert("Failed to update contract: " + e.message);
+      alert("Could not resume extraction: " + e.message);
+    } finally {
+      setResumingAgent(false);
     }
   };
 
-  const handleTermStatusChange = async (termId, newStatus) => {
-    try {
-      const updatedTerm = await updateContractTerm(id, termId, newStatus);
-      setTerms(prev => prev.map(t => t.id === termId ? updatedTerm : t));
-    } catch (e) {
-      alert("Failed to update term status: " + e.message);
-    }
-  };
-
-  if (loading) return <div className="empty"><span className="spinner" style={{ width: 24, height: 24 }} /></div>;
-  if (error) return <div className="shell-page"><div className="alert alert-error">{error}</div></div>;
-  if (!contract) return null;
-
-  const phase = agentStatus?.agent_pipeline_phase;
-  const stepIdx = agentPipelinePhaseToStepIndex(phase);
+  const archivedTooltip = "This contract is archived. You cannot review or edit terms.";
 
   return (
-    <div className="shell-page">
-      <button className="btn btn-sm mb-4" style={{ display: "flex", alignItems: "center", gap: 6 }}
-        onClick={() => navigate(`/projects/${projectId}/entities/contracts`)}>
-        ← Back to Contracts
-      </button>
+    <div className="shell-page" style={{ padding: "24px 32px", background: "#f8fafc", minHeight: "100vh" }}>
 
-      {/* Header */}
-      <div className="card mb-4">
-        <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            {isEditing ? (
-              <input 
-                className="input" 
-                value={editForm.title} 
-                onChange={(e) => setEditForm({...editForm, title: e.target.value})} 
-                style={{ fontSize: 24, fontWeight: 700, marginBottom: 6, padding: "4px 8px", width: "100%", minWidth: 300 }}
-              />
-            ) : (
-              <h1 className="shell-page-title" style={{ marginBottom: 6 }}>{contract.title}</h1>
-            )}
-            
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
-              {isEditing ? (
-                <>
-                  <select className="input" style={{ padding: "4px 8px", height: 28, fontSize: 12 }} value={editForm.status} onChange={(e) => setEditForm({...editForm, status: e.target.value})}>
-                    <option value="Pending Review">Pending Review</option>
-                    <option value="Active">Active</option>
-                    <option value="On Hold">On Hold</option>
-                  </select>
-                  <select className="input" style={{ padding: "4px 8px", height: 28, fontSize: 12 }} value={editForm.type} onChange={(e) => setEditForm({...editForm, type: e.target.value})}>
-                    <option value="Master Agreement">Master Agreement</option>
-                    <option value="Purchase Order">Purchase Order</option>
-                    <option value="Amendment">Amendment</option>
-                    <option value="Renewal">Renewal</option>
-                  </select>
-                </>
-              ) : (
-                <>
-                  <span className={`badge ${STATUS_COLORS[contract.status] || "badge-grey"}`}>{contract.status}</span>
-                  <span className="badge badge-grey">{contract.type}</span>
-                </>
-              )}
-              {contract.vendor_name && <span style={{ fontSize: 13, color: "var(--text-2)" }}>{contract.vendor_name}</span>}
-            </div>
-          </div>
-          <div>
-            {isEditing ? (
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn btn-ghost btn-sm" onClick={() => {setIsEditing(false); setEditForm({title: contract.title, status: contract.status, type: contract.type, total_value: contract.total_value});}}>Cancel</button>
-                <button className="btn btn-primary btn-sm" onClick={handleUpdate}>Save</button>
-              </div>
-            ) : (
-              <button className="btn btn-ghost btn-sm" onClick={() => setIsEditing(true)}>Edit Contract</button>
-            )}
-          </div>
+      {/* ── Breadcrumb ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+          <span onClick={() => navigate(`/projects/${projectId}/entities/contracts`)} style={{ color: "#2563eb", cursor: "pointer", fontWeight: 500 }}>Contracts</span>
+          <span style={{ color: "#cbd5e1" }}>›</span>
+          <span style={{ color: "#64748b", fontWeight: 500 }}>{contract.title}</span>
         </div>
 
-        <div className="stats-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)", marginBottom: 0 }}>
-          {[
-            { 
-              label: "Total Value", 
-              value: isEditing ? (
-                <input type="number" className="input" style={{ width: 100, padding: 4 }} value={editForm.total_value || ""} onChange={(e) => setEditForm({...editForm, total_value: e.target.value})} />
-              ) : (contract.total_value ? `$${Number(contract.total_value).toLocaleString()}` : "—")
-            },
-            { label: "Extracted Terms", value: contract.extracted_terms },
-            { label: "Start Date", value: new Date(contract.start_date).toLocaleDateString() },
-            { label: "End Date", value: new Date(contract.end_date).toLocaleDateString() },
-          ].map((s, i) => (
-            <div key={i} className="stat-card" style={{ padding: "12px 16px" }}>
-              <div className="stat-label">{s.label}</div>
-              <div className="stat-value" style={{ fontSize: 20 }}>{s.value}</div>
-            </div>
-          ))}
+        {/* ── Action buttons ── */}
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => navigate(`/projects/${projectId}/entities/contracts/${id}/pdf`)}
+            style={{ display: "inline-flex", alignItems: "center", background: "white", border: "1px solid #e2e8f0", padding: "7px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", color: "#374151" }}
+          >
+            <IconEye /> View PDF
+          </button>
+          {!isArchived ? (
+            <button
+              onClick={() => navigate(`/projects/${projectId}/entities/contracts/${id}/review`)}
+              style={{ display: "inline-flex", alignItems: "center", background: "white", border: "1px solid #e2e8f0", padding: "7px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "pointer", color: "#374151" }}
+            >
+              <IconCheckCircle /> Review &amp; confirm
+            </button>
+          ) : (
+            <button disabled title={archivedTooltip} style={{ display: "inline-flex", alignItems: "center", background: "#f9fafb", border: "1px solid #e2e8f0", padding: "7px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "not-allowed", color: "#9ca3af" }}>
+              <IconCheckCircle /> Review &amp; confirm
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="kb-detail-tabs mb-2">
-        {["details", "terms & clauses", "documents", "line items", "agent pipeline"].map((t) => (
-          <button key={t} className={`kb-detail-tab${tab === t ? " active" : ""}`}
-            onClick={() => setTab(t)} style={{ textTransform: "capitalize" }}>
-            {t}
+      {/* ── Tabs ── */}
+      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e2e8f0", marginBottom: 20 }}>
+        {[
+          { key: "details",  label: "Details" },
+          { key: "terms",    label: `Extracted Terms` },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            style={{
+              padding: "10px 20px", fontSize: 13, fontWeight: tab === key ? 600 : 500, cursor: "pointer",
+              background: "transparent", border: "none", borderBottom: tab === key ? "2px solid #2563eb" : "2px solid transparent",
+              color: tab === key ? "#2563eb" : "#6b7280", transition: "all 0.15s",
+            }}
+          >
+            {label}{key === "terms" ? ` (${terms.length})` : ""}
           </button>
         ))}
       </div>
 
+      {/* ── HITL Banner ── */}
+      {hitlPaused && (
+        <div style={{ padding: 16, borderRadius: 8, border: "1px solid #fcd34d", background: "#fef3c7", color: "#78350f", fontSize: 14, marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <IconAlertTriangle />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontWeight: 600, margin: "0 0 8px 0" }}>Agent review required before extraction</p>
+              <p style={{ margin: "0 0 12px 0", color: "#92400e" }}>
+                The ingestion agent paused (cross-check or LLM policy). The PDF is saved; terms and ingredients are not extracted yet. Confirm vendor and dates below, then continue.
+              </p>
+              {typeof hitlPayload.llm_rationale === "string" && hitlPayload.llm_rationale.trim() && (
+                <p style={{ borderTop: "1px solid #fde68a", paddingTop: 8, margin: "0 0 8px 0", color: "#92400e" }}>
+                  <span style={{ fontWeight: 500 }}>Policy note: </span>{hitlPayload.llm_rationale}
+                </p>
+              )}
+              {ccWarnList.length > 0 && (
+                <ul style={{ borderTop: "1px solid #fde68a", paddingTop: 8, margin: "0 0 8px 0", paddingLeft: 20 }}>
+                  {ccWarnList.map((w, i) => <li key={i}>{w}</li>)}
+                </ul>
+              )}
+              {llmPolicy.rationale && !hitlPayload.llm_rationale && (
+                <p style={{ borderTop: "1px solid #fde68a", paddingTop: 8, margin: 0, fontSize: 12, color: "#92400e" }}>
+                  <span style={{ fontWeight: 500 }}>LLM policy: </span>{String(llmPolicy.rationale)}
+                </p>
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 12 }}>
+                <button
+                  onClick={handleResumeAgent}
+                  disabled={resumingAgent}
+                  style={{ padding: "7px 14px", background: "#2563eb", color: "white", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: resumingAgent ? "not-allowed" : "pointer" }}
+                >
+                  {resumingAgent ? "Resuming…" : "Continue extraction"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── AI Processing progress ── */}
+      {contract.status === "AI Processing" && (
+        <ContractAgentPipelineProgress
+          activeStepIndex={agentPipelinePhaseToStepIndex(contract.contract_metadata?.agent_pipeline_phase)}
+          hint="Extraction runs on the server in the background; this view refreshes every few seconds until terms and ingredients are ready."
+        />
+      )}
+
+      {/* ── On Hold warning ── */}
+      {contract.status === "On Hold" && !isArchived && (
+        <div style={{ padding: 16, borderRadius: 8, border: "1px solid #fde047", background: "#fefce8", color: "#854d0e", fontSize: 14, marginBottom: 16 }}>
+          <strong>On hold</strong> — Materials &amp; ingredients pricing could not be validated automatically.
+          Review extracted lines, use <strong>Review &amp; confirm</strong> to verify data, and re-upload the updated contract.
+          Contract activation is blocked until this is resolved.
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* DETAILS TAB                                                           */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
       {tab === "details" && (
-        <div className="card">
-          <h3 className="card-title mb-4">Contract Information</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 32px" }}>
-            {[
-              ["Contract ID", contract.id],
-              ["Vendor", contract.vendor_name || "—"],
-              ["Uploaded By", contract.uploaded_by_name || "—"],
-              ["Uploaded At", new Date(contract.uploaded_at).toLocaleString()],
-              ["Last Modified", new Date(contract.last_modified).toLocaleString()],
-              ["AI Confidence", contract.ai_confidence != null ? `${contract.ai_confidence}%` : "—"],
-            ].map(([label, val]) => (
-              <div key={label}>
-                <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 4 }}>{label}</div>
-                <div style={{ fontSize: 14, color: "var(--text)", wordBreak: "break-all" }}>{val}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {tab === "terms & clauses" && (
-        <div className="card" style={{ padding: 0 }}>
-          {terms.length === 0 ? (
-            <div className="empty" style={{ padding: 40 }}>
-              <div className="empty-title">No Terms Found</div>
-              <div className="empty-sub">No terms or clauses have been extracted for this contract yet.</div>
-            </div>
-          ) : (
-            <div className="data-table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Clause</th>
-                    <th>Category</th>
-                    <th>Extracted Value</th>
-                    <th>Confidence</th>
-                    <th>Status</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {terms.map(t => (
-                    <tr key={t.id}>
-                      <td style={{ fontWeight: 500 }}>{t.clause}</td>
-                      <td><span className="badge badge-grey">{t.category}</span></td>
-                      <td style={{ maxWidth: 300, whiteSpace: "normal" }}>{t.extracted_value}</td>
-                      <td>
-                        <span style={{ color: t.confidence >= 90 ? "var(--green)" : t.confidence >= 70 ? "var(--amber)" : "var(--red)" }}>
-                          {t.confidence}%
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge ${t.status === 'Verified' ? 'badge-green' : t.status === 'Disputed' ? 'badge-grey' : 'badge-amber'}`}>
-                          {t.status}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                          <button 
-                            className="btn btn-ghost btn-sm" 
-                            style={{ padding: "4px 8px", fontSize: 12, color: "var(--green)" }}
-                            onClick={() => handleTermStatusChange(t.id, "Verified")}
-                            disabled={t.status === "Verified"}
-                          >✓ Verify</button>
-                          <button 
-                            className="btn btn-ghost btn-sm" 
-                            style={{ padding: "4px 8px", fontSize: 12, color: "var(--red)" }}
-                            onClick={() => handleTermStatusChange(t.id, "Disputed")}
-                            disabled={t.status === "Disputed"}
-                          >✕ Dispute</button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "documents" && (
-        <div className="card" style={{ padding: 0 }}>
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "flex-end" }}>
-            <button className="btn btn-primary btn-sm">Upload Document</button>
-          </div>
-          {documents.length === 0 ? (
-            <div className="empty" style={{ padding: 40 }}>
-              <div className="empty-title">No Documents</div>
-              <div className="empty-sub">No files have been uploaded to this contract.</div>
-            </div>
-          ) : (
-            <div className="data-table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>File Name</th>
-                    <th>Version</th>
-                    <th>Size</th>
-                    <th>Type</th>
-                    <th>Uploaded At</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {documents.map(d => (
-                    <tr key={d.id}>
-                      <td style={{ fontWeight: 500, color: "var(--primary)" }}>{d.file_name}</td>
-                      <td><span className="badge badge-grey">{d.version}</span></td>
-                      <td>{(d.file_size / 1024).toFixed(1)} KB</td>
-                      <td>{d.mime_type}</td>
-                      <td>{new Date(d.uploaded_at).toLocaleDateString()}</td>
-                      <td style={{ textAlign: "right" }}>
-                        <button className="btn btn-ghost btn-sm">Download</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "line items" && (
-        <div className="card">
-          <div className="empty" style={{ padding: 40, border: "1px dashed var(--border)", borderRadius: 8 }}>
-            <div className="empty-title">Line Items Processing</div>
-            <div className="empty-sub">Priced line items and ingredients have not been fully mapped for this contract yet.</div>
-          </div>
-        </div>
-      )}
-
-      {tab === "agent pipeline" && (
-        <div className="card">
-          <h3 className="card-title mb-4">Contract Agent Pipeline</h3>
-          {/* Pipeline steps */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, marginBottom: 20 }}>
-            {CONTRACT_AGENT_PIPELINE_STEPS.map((step, idx) => {
-              const isDone = phase === "complete" || idx < stepIdx;
-              const isCurrent = idx === stepIdx && phase !== "complete" && phase !== "failed";
-              const isError = phase === "failed" && idx === stepIdx;
-              return (
-                <div key={step.id} style={{ textAlign: "center" }} title={step.purpose}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 10, margin: "0 auto 6px",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    border: "2px solid",
-                    borderColor: isError ? "var(--red)" : isDone ? "var(--green)" : isCurrent ? "var(--primary)" : "var(--border-2)",
-                    background: isError ? "var(--red-dim)" : isDone ? "var(--green-dim)" : isCurrent ? "var(--primary-light)" : "var(--surface-2)",
-                  }}>
-                    {isDone ? "✓" : isCurrent ? <span className="spinner" style={{ width: 14, height: 14 }} /> : isError ? "✕" : idx + 1}
-                  </div>
-                  <div style={{ fontSize: 10, color: isCurrent ? "var(--primary)" : isDone ? "var(--green)" : "var(--text-3)" }}>
-                    {step.shortLabel}
-                  </div>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
+          {/* Contract information card */}
+          <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: 8, padding: 20 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 20px 0", color: "#111827" }}>Contract Information</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 24px" }}>
+              {[
+                ["Contract ID",   contract.id],
+                ["Vendor",        contract.vendor_name || "—"],
+                ["Type",          contract.type],
+                ["Value",         formatCurrency(contract.total_value)],
+                ["Start Date",    formatDate(contract.start_date)],
+                ["End Date",      formatDate(contract.end_date)],
+                ["Products",      productsCount],
+                ["Uploaded By",   contract.uploaded_by_name || "System"],
+                ["Last Modified", formatDate(contract.last_modified)],
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "#111827", wordBreak: "break-all" }}>{v}</div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
-          {/* Trace */}
-          {agentStatus?.agent_graph_trace?.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3)", marginBottom: 8 }}>Graph Trace</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {agentStatus.agent_graph_trace.map((t, i) => (
-                  <div key={i} style={{ fontSize: 12, padding: "4px 10px", background: "var(--surface-2)", borderRadius: 6, border: "1px solid var(--border)", color: "var(--text-2)" }}>{t}</div>
-                ))}
+
+          {/* Right sidebar: Status + counts */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: 8, padding: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <span style={{ fontSize: 13, color: "#6b7280" }}>Status</span>
+                <StatusBadge status={contract.status} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, color: "#6b7280" }}>Extracted Terms</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{contract.extracted_terms || terms.length}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, color: "#6b7280" }}>Raw Materials</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>
+                    {extractedIngredientsLoading
+                      ? <span className="spinner" style={{ width: 12, height: 12 }} />
+                      : materialsCount}
+                  </span>
+                </div>
               </div>
             </div>
-          )}
-          {agentStatus?.agent_cross_check_warnings?.length > 0 && (
-            <div className="alert alert-warn mt-3">
-              <strong>Cross-check warnings:</strong>
-              <ul style={{ margin: "4px 0 0 16px" }}>
-                {agentStatus.agent_cross_check_warnings.map((w, i) => <li key={i}>{w}</li>)}
-              </ul>
-            </div>
-          )}
-          {!agentStatus && <div className="empty-sub">No agent pipeline data available for this contract.</div>}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* EXTRACTED TERMS TAB                                                   */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {tab === "terms" && (
+        <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: 8, overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #f1f5f9" }}>
+                {["Clause", "Category", "Extracted Value", "Reference", "Status"].map((h, i, a) => (
+                  <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", width: ["18%","14%","38%","16%","14%"][i] }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {terms.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center", padding: "48px 16px", color: "#9ca3af", fontSize: 14 }}>
+                    No extracted terms yet.
+                  </td>
+                </tr>
+              ) : terms.map((t) => (
+                <tr key={t.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                  <td style={{ padding: "14px 16px", fontWeight: 500, fontSize: 13, color: "#111827" }}>{t.clause}</td>
+                  <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151" }}>{t.category}</td>
+                  <td style={{ padding: "14px 16px", fontWeight: 500, fontSize: 13, color: "#111827" }}>{t.extracted_value}</td>
+                  <td style={{ padding: "14px 16px", fontSize: 12, color: "#2563eb" }}>{t.page_ref || "N/A"}</td>
+                  <td style={{ padding: "14px 16px" }}><StatusBadge status={t.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
