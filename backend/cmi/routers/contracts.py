@@ -1,5 +1,8 @@
 """CMI Contracts API — mounted at /api/cmi/contracts in URP."""
+import os
+from pathlib import Path
 from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, update
 from typing import Optional, List
@@ -217,3 +220,99 @@ async def list_contract_documents(contract_id: UUID, db: AsyncSession = Depends(
         .order_by(CMIContractDocument.uploaded_at.desc())
     )
     return [ContractDocumentResponse.model_validate(d) for d in result.scalars().all()]
+
+
+@router.get("/{contract_id}/document-url")
+async def get_contract_document_url(contract_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
+    """Return a URL to the contract PDF (served via /pdf endpoint)."""
+    result = await db.execute(
+        select(CMIContract).where(CMIContract.id == contract_id, CMIContract.deleted_at == None)
+    )
+    contract = result.scalar_one_or_none()
+    if not contract:
+        raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
+
+    if contract.file_path and (os.path.isfile(contract.file_path) or contract.file_path.startswith("http")):
+        return {"document_url": f"/api/cmi/contracts/{contract_id}/pdf"}
+
+    doc_result = await db.execute(
+        select(CMIContractDocument)
+        .where(CMIContractDocument.contract_id == contract_id)
+        .order_by(CMIContractDocument.uploaded_at.desc())
+        .limit(1)
+    )
+    doc = doc_result.scalar_one_or_none()
+    if doc and (os.path.isfile(doc.file_path) or doc.file_path.startswith("http")):
+        return {"document_url": f"/api/cmi/contracts/{contract_id}/pdf"}
+
+    raise HTTPException(status_code=404, detail="No PDF file found for this contract")
+
+@router.get("/{contract_id}/debug-path")
+async def debug_contract_path(contract_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
+    result = await db.execute(
+        select(CMIContract).where(CMIContract.id == contract_id, CMIContract.deleted_at == None)
+    )
+    contract = result.scalar_one_or_none()
+    
+    doc_result = await db.execute(
+        select(CMIContractDocument)
+        .where(CMIContractDocument.contract_id == contract_id)
+        .order_by(CMIContractDocument.uploaded_at.desc())
+        .limit(1)
+    )
+    doc = doc_result.scalar_one_or_none()
+    
+    return {
+        "contract_file_path": contract.file_path if contract else None,
+        "doc_file_path": doc.file_path if doc else None,
+    }
+
+@router.get("/{contract_id}/pdf")
+async def stream_contract_pdf(contract_id: UUID, db: AsyncSession = Depends(get_cmi_db)):
+    """Stream the contract PDF file directly."""
+    result = await db.execute(
+        select(CMIContract).where(CMIContract.id == contract_id, CMIContract.deleted_at == None)
+    )
+    contract = result.scalar_one_or_none()
+    if not contract:
+        raise HTTPException(status_code=404, detail=f"Contract {contract_id} not found")
+
+    path = contract.file_path
+    if not path:
+        doc_result = await db.execute(
+            select(CMIContractDocument)
+            .where(CMIContractDocument.contract_id == contract_id)
+            .order_by(CMIContractDocument.uploaded_at.desc())
+            .limit(1)
+        )
+        doc = doc_result.scalar_one_or_none()
+        if doc:
+            path = doc.file_path
+
+    if not path:
+        raise HTTPException(status_code=404, detail="PDF file not found in database")
+
+    # The database path might be an Azure URL. Extract the filename.
+    file_name = path.split("/")[-1] if "/" in path else Path(path).name
+    if "?" in file_name:
+        file_name = file_name.split("?")[0]
+
+    # Search for the physical file in the CMI procurement_mock directory
+    cmi_mock_dir = r"C:\Users\Veera Prasd Elluru\Downloads\Cost-model-Intelligence-unit_conversion\Cost-model-Intelligence-unit_conversion\Backend\data\procurement_mock"
+    local_path = None
+    if os.path.exists(cmi_mock_dir):
+        for root, dirs, files in os.walk(cmi_mock_dir):
+            if file_name in files:
+                local_path = os.path.join(root, file_name)
+                break
+
+    if local_path and os.path.isfile(local_path):
+        mime = "application/pdf" if local_path.lower().endswith(".pdf") else "application/octet-stream"
+        return FileResponse(
+            path=local_path,
+            media_type=mime,
+            filename=file_name,
+            headers={"Content-Disposition": f'inline; filename="{file_name}"'},
+        )
+        
+    raise HTTPException(status_code=404, detail="PDF file not found on local disk")

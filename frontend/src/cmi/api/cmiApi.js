@@ -71,6 +71,10 @@ export async function archiveContract(id) {
   return cmiCall(`/contracts/${id}/archive`, { method: "PATCH" });
 }
 
+export async function deleteContract(id) {
+  return archiveContract(id);
+}
+
 export async function bulkArchiveContracts(contractIds) {
   return cmiCall("/contracts/bulk-archive", {
     method: "POST",
@@ -95,6 +99,28 @@ export async function updateContractTerm(contractId, termId, status) {
 
 export async function fetchContractDocuments(contractId) {
   return cmiCall(`/contracts/${contractId}/documents`);
+}
+
+export async function fetchContractExtractedIngredients(contractId) {
+  return cmiCall(`/contracts/${contractId}/ingredients`);
+}
+
+export async function fetchContractPdfObjectUrl(contractId) {
+  const res = await fetch(`${BASE}/contracts/${contractId}/pdf`);
+  if (!res.ok) return null;
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+export async function getContractDocumentUrl(contractId) {
+  return cmiCall(`/contracts/${contractId}/document-url`);
+}
+
+export async function resumeContractAgent(contractId, body = {}) {
+  return cmiCall(`/contracts/${contractId}/agent/resume`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 // ── Products ──────────────────────────────────────────────────────

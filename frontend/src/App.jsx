@@ -26,6 +26,8 @@ import VendorListPage from "./cmi/pages/VendorListPage";
 import VendorProfilePage from "./cmi/pages/VendorProfilePage";
 import ContractListPage from "./cmi/pages/ContractListPage";
 import ContractDetailPage from "./cmi/pages/ContractDetailPage";
+import ContractPDFPage from "./cmi/pages/ContractPDFPage";
+import ContractReviewPage from "./cmi/pages/ContractReviewPage";
 import ProductListPage from "./cmi/pages/ProductListPage";
 import ProductDetailPage from "./cmi/pages/ProductDetailPage";
 import UploadContractPage from "./cmi/pages/UploadContractPage";
@@ -86,6 +88,8 @@ export default function App() {
         <Route path="entities/contracts" element={<ContractListPage />} />
         <Route path="entities/contracts/upload" element={<UploadContractPage />} />
         <Route path="entities/contracts/:id" element={<ContractDetailPage />} />
+        <Route path="entities/contracts/:id/pdf" element={<ContractPDFPage />} />
+        <Route path="entities/contracts/:id/review" element={<ContractReviewPage />} />
         <Route path="entities/products" element={<ProductListPage />} />
         <Route path="entities/products/:id" element={<ProductDetailPage />} />
         <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />
