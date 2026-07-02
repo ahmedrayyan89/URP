@@ -73,7 +73,7 @@ const STATUS_COLORS = {
   Draft: "badge-amber",
 };
 
-export default function ProductListPage() {
+export default function ProductListPage({ embed = false }) {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
@@ -227,24 +227,26 @@ export default function ProductListPage() {
   };
 
   return (
-    <div className="shell-page">
+    <div className={embed ? "" : "shell-page"} style={embed ? { padding: 0 } : undefined}>
       {/* ── Header Row ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <div>
-          <div style={{
-            background: "#eff6ff",
-            border: "1px solid #bfdbfe",
-            color: "#2563eb",
-            padding: "6px 16px",
-            borderRadius: 6,
-            fontWeight: 600,
-            fontSize: 13,
-            display: "inline-flex",
-            alignItems: "center"
-          }}>
-            Products
+      <div style={{ display: "flex", justifyContent: embed ? "flex-end" : "space-between", alignItems: "center", marginBottom: 20 }}>
+        {!embed && (
+          <div>
+            <div style={{
+              background: "#eff6ff",
+              border: "1px solid #bfdbfe",
+              color: "#2563eb",
+              padding: "6px 16px",
+              borderRadius: 6,
+              fontWeight: 600,
+              fontSize: 13,
+              display: "inline-flex",
+              alignItems: "center"
+            }}>
+              Products
+            </div>
           </div>
-        </div>
+        )}
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={handleExportCSV}

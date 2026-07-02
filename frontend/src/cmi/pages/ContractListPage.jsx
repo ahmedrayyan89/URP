@@ -155,7 +155,7 @@ const ConfidenceBadge = ({ value }) => (
   </span>
 );
 
-export default function ContractListPage() {
+export default function ContractListPage({ embed = false }) {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
@@ -213,34 +213,38 @@ export default function ContractListPage() {
   };
 
   const handleExportCSV = () => {
-    if (!filtered.length) return;
-    const headers = ["Contract", "Vendor", "Type", "Status", "End Date"].join(",");
-    const rows = filtered.map(c => [
-      `"${c.title.replace(/"/g, '""')}"`,
-      `"${(c.vendor_name || "").replace(/"/g, '""')}"`,
-      `"${c.type}"`,
-      `"${c.status}"`,
-      `"${formatDate(c.end_date)}"`
-    ].join(","));
+    const headers = ["Contract Title", "Vendor", "Type", "Status", "Start Date", "End Date", "Total Spend"].join(",");
+    const rows = filtered.map((c) => [
+      c.title,
+      c.vendor_name || "—",
+      c.type || "—",
+      c.status || "—",
+      c.start_date ? new Date(c.start_date).toLocaleDateString() : "—",
+      c.end_date ? new Date(c.end_date).toLocaleDateString() : "—",
+      c.contract_metadata?.total_spend || "—"
+    ].map(val => `"${val}"`).join(","));
+
     const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "contracts_export.csv");
+    link.setAttribute("download", `contracts_export_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <div className="shell-page" style={{ padding: "24px 32px", background: "#f8fafc", minHeight: "100vh" }}>
+    <div className={embed ? "" : "shell-page"} style={embed ? { padding: 0 } : { padding: "24px 32px", background: "#f8fafc", minHeight: "100vh" }}>
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ background: "white", padding: "6px 16px", borderRadius: 999, border: "1px solid #e2e8f0", fontSize: 13, fontWeight: 500, color: "#2563eb", display: "inline-flex" }}>
-            Contracts
+      <div style={{ display: "flex", justifyContent: embed ? "flex-end" : "space-between", alignItems: "center", marginBottom: 24 }}>
+        {!embed && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ background: "white", padding: "6px 16px", borderRadius: 999, border: "1px solid #e2e8f0", fontSize: 13, fontWeight: 500, color: "#2563eb", display: "inline-flex" }}>
+              Contracts
+            </div>
           </div>
-        </div>
+        )}
         <div style={{ display: "flex", gap: 12 }}>
           <button
             onClick={handleExportCSV}
