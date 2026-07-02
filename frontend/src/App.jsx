@@ -76,25 +76,25 @@ export default function App() {
           element={<ProcurementDashboardPage />}
         />
         <Route path="cases/:caseId" element={<CaseDetailPage />} />
-        <Route
-          path="entities"
-          element={<EntitiesPage />}
-        />
+        <Route path="entities" element={<EntitiesPage />} />
+        <Route path="entities/definitions" element={<EntitiesPage />} />
+        <Route path="entities/instances" element={<EntitiesPage />} />
+        <Route path="entities/vendors" element={<EntitiesPage />} />
+        <Route path="entities/contracts" element={<EntitiesPage />} />
+        <Route path="entities/products" element={<EntitiesPage />} />
+        <Route path="entities/raw-materials" element={<EntitiesPage />} />
         <Route path="entities/definitions/new" element={<CreateEntityDefinitionPage />} />
         <Route path="entities/definitions/:defId" element={<EntityDefinitionDetailPage />} />
         <Route path="entities/instances/:instanceId" element={<EntityInstanceDetailPage />} />
         
         {/* CMI Integrated Entities routes */}
-        <Route path="entities/vendors" element={<VendorListPage />} />
         <Route path="entities/vendors/new" element={<VendorFormPage />} />
         <Route path="entities/vendors/:id" element={<VendorProfilePage />} />
         <Route path="entities/vendors/:id/edit" element={<VendorFormPage />} />
-        <Route path="entities/contracts" element={<ContractListPage />} />
         <Route path="entities/contracts/upload" element={<UploadContractPage />} />
         <Route path="entities/contracts/:id" element={<ContractDetailPage />} />
         <Route path="entities/contracts/:id/pdf" element={<ContractPDFPage />} />
         <Route path="entities/contracts/:id/review" element={<ContractReviewPage />} />
-        <Route path="entities/products" element={<ProductListPage />} />
         <Route path="entities/products/new" element={<CreateProductPage />} />
         <Route path="entities/products/:id" element={<ProductDetailPage />} />
         <Route path="knowledge" element={<KnowledgeBaseCatalogPage />} />

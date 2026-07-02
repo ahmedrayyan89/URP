@@ -152,7 +152,7 @@ const mockFiles = {
 };
 
 // ── Main Component ─────────────────────────────────────────────────
-export default function VendorListPage() {
+export default function VendorListPage({ embed = false }) {
   const navigate = useNavigate();
   const { projectId } = useParams();
   const vendorsBase = `/projects/${projectId}/entities/vendors`;
@@ -251,7 +251,7 @@ export default function VendorListPage() {
   };
 
   return (
-    <div className="shell-page">
+    <div className={embed ? "" : "shell-page"} style={embed ? { padding: 0 } : undefined}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* Toast */}
@@ -262,10 +262,12 @@ export default function VendorListPage() {
       )}
 
       {/* ── Page Header ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <nav style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface)", padding: "6px 12px", borderRadius: 8, border: "1px solid var(--border)" }}>
-          <span style={{ fontSize: 13, color: "var(--primary-2)", fontWeight: 600 }}>Vendors</span>
-        </nav>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: embed ? "flex-end" : "space-between", marginBottom: 8 }}>
+        {!embed && (
+          <nav style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--surface)", padding: "6px 12px", borderRadius: 8, border: "1px solid var(--border)" }}>
+            <span style={{ fontSize: 13, color: "var(--primary-2)", fontWeight: 600 }}>Vendors</span>
+          </nav>
+        )}
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn btn-ghost btn-sm" onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <Download /> Export
